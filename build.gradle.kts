@@ -61,6 +61,11 @@ dependencies {
 	modImplementation(libs.qkl)
 
 	includeApi(libs.kotlinx.serialization)
+
+	includeApi(libs.ktor.core)
+	includeApi(libs.ktor.cio)
+	includeApi(libs.ktor.contentnegotiation)
+	includeApi(libs.ktor.json)
 }
 
 tasks {
