@@ -24,6 +24,11 @@ repositories {
 	// for more information about repositories.
 }
 
+fun DependencyHandlerScope.includeApi(dependency: Any) {
+	api(dependency)
+	include(dependency)
+}
+
 // All the dependencies are declared at gradle/libs.version.toml and referenced with "libs.<id>"
 // See https://docs.gradle.org/current/userguide/platforms.html for information on how version catalogs work.
 dependencies {
