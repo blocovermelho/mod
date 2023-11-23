@@ -9,6 +9,7 @@ plugins {
 
 	alias(libs.plugins.kotlin)
 	alias(libs.plugins.quilt.loom)
+	alias(libs.plugins.kotlinx.serialization)
 }
 
 val archives_base_name: String by project
@@ -58,6 +59,8 @@ dependencies {
 	// modImplementation(libs.bundles.qfapi) // If you wish to use the deprecated Fabric API modules
 
 	modImplementation(libs.qkl)
+
+	includeApi(libs.kotlinx.serialization)
 }
 
 tasks {
