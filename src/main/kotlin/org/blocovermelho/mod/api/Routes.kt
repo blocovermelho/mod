@@ -35,7 +35,7 @@ object Routes {
         suspend fun Create(server: CreateServer): HttpResult<org.blocovermelho.mod.api.models.Server> =
             BVClient.Post(BASE_PATH, server)
 
-        suspend fun Delete(uuid: UUID): HttpResult<Boolean> = BVClient.Delete(BASE_PATH + "/$uuid")
+        suspend fun Delete(uuid: UUID): HttpResult<org.blocovermelho.mod.api.models.Server> = BVClient.Delete(BASE_PATH + "/$uuid")
 
         suspend fun Get(uuid: UUID): HttpResult<org.blocovermelho.mod.api.models.Server> =
             BVClient.Get(BASE_PATH + "/$uuid")
