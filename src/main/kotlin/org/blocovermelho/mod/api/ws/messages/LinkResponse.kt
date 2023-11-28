@@ -1,6 +1,7 @@
 package org.blocovermelho.mod.api.ws.messages
 
 import kotlinx.datetime.Instant
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.blocovermelho.mod.UUIDSerializer
 import java.util.*
@@ -16,9 +17,13 @@ data class Error(val error: String) : LinkResponse()
 
 @Serializable
 data class LinkResult(
+    @SerialName("discord_id")
     val discordId: String,
+    @SerialName("discord_username")
     val discordUsername: String,
+    @SerialName("when")
     val _when : Instant,
+    @SerialName("minecraft_uuid")
     @Serializable(with = UUIDSerializer::class) val minecraftUuid: UUID
 )
 
