@@ -7,6 +7,7 @@ import org.quiltmc.loader.api.config.v2.QuiltConfig
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.util.UUID
 
 object BVQuilt : ModInitializer {
     val LOGGER: Logger = LoggerFactory.getLogger("BVMod")
@@ -14,5 +15,10 @@ object BVQuilt : ModInitializer {
     val SERVER_DATA = QuiltConfig.create("bv-quilt", "server", ServerDetails::class.java)
     override fun onInitialize(mod: ModContainer) {
         LOGGER.info("Hello Quilt world from {}!", mod.metadata()?.name())
+    }
+
+    object Store {
+        val LoggedPlayers : MutableSet<UUID> = mutableSetOf()
+        var ServerUUID : UUID = UUID.fromString(SERVER_DATA.id.value())
     }
 }
