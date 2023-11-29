@@ -3,8 +3,10 @@ package org.blocovermelho.mod.api
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import io.ktor.serialization.kotlinx.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -37,6 +39,10 @@ object BVClient {
         client = HttpClient(CIO) {
             install(ContentNegotiation) {
                 json(json)
+            }
+
+            install(WebSockets) {
+                contentConverter = KotlinxWebsocketSerializationConverter(json)
             }
         }
     }
