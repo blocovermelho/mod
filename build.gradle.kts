@@ -10,6 +10,7 @@ plugins {
 	alias(libs.plugins.kotlin)
 	alias(libs.plugins.quilt.loom)
 	alias(libs.plugins.kotlinx.serialization)
+	alias(libs.plugins.shadow)
 }
 
 val archives_base_name: String by project
@@ -25,11 +26,26 @@ repositories {
 	// for more information about repositories.
 }
 
-fun DependencyHandlerScope.includeApi(dependency: Any) {
-	api(dependency)
-	include(dependency)
-}
+tasks {
+	remapJar {
+		dependsOn(shadowJar)
+		input.set(shadowJar.get().archiveFile)
+	}
 
+	shadowJar {
+		from("LICENSE")
+
+		configurations = listOf(
+			project.configurations.shadow.get()
+		)
+		archiveClassifier.set("dev-all")
+
+		exclude("kotlin/**", "kotlinx/**", "javax/**", "META-INF")
+		exclude("org/intellij/**", "org/jetbrains/annotations/**")
+		exclude("com/google/gson/**")
+		exclude("org/slf4j/**")
+	}
+}
 // All the dependencies are declared at gradle/libs.version.toml and referenced with "libs.<id>"
 // See https://docs.gradle.org/current/userguide/platforms.html for information on how version catalogs work.
 dependencies {
@@ -60,12 +76,12 @@ dependencies {
 
 	modImplementation(libs.qkl)
 
-	includeApi(libs.kotlinx.serialization)
+	shadow(libs.kotlinx.serialization)
 
-	includeApi(libs.ktor.core)
-	includeApi(libs.ktor.cio)
-	includeApi(libs.ktor.contentnegotiation)
-	includeApi(libs.ktor.json)
+	shadow(libs.ktor.core)
+	shadow(libs.ktor.cio)
+	shadow(libs.ktor.contentnegotiation)
+	shadow(libs.ktor.json)
 }
 
 tasks {

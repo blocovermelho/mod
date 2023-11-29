@@ -9,6 +9,7 @@ mappings = "1.20.1+build.23"
 loom = "1.+"
 ktx-ser = "1.6.0"
 ktor = "2.3.6"
+shadow = "8.1.1"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
@@ -33,3 +34,4 @@ quilted_fabric_api = ["qfapi", "qfapi_deprecated"]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 quilt_loom = { id = "org.quiltmc.loom", version.ref = "loom" }
 kotlinx_serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }
