@@ -1,5 +1,6 @@
 package org.blocovermelho.mod
 
+import org.blocovermelho.mod.api.BVClient
 import org.blocovermelho.mod.config.ApiSettings
 import org.blocovermelho.mod.config.ServerDetails
 import org.blocovermelho.mod.events.registerEvents
@@ -15,6 +16,7 @@ object BVQuilt : ModInitializer {
     val API_CONFIG = QuiltConfig.create("bv-quilt", "api", ApiSettings::class.java)
     val SERVER_DATA = QuiltConfig.create("bv-quilt", "server", ServerDetails::class.java)
     override fun onInitialize(mod: ModContainer) {
+        BVClient.init(API_CONFIG)
         registerEvents()
         LOGGER.info("Hello Quilt world from {}!", mod.metadata()?.name())
     }
