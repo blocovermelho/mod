@@ -1,6 +1,7 @@
 package org.blocovermelho.mod
 
 import org.blocovermelho.mod.api.BVClient
+import org.blocovermelho.mod.commands.registerCommands
 import org.blocovermelho.mod.config.ApiSettings
 import org.blocovermelho.mod.config.ServerDetails
 import org.blocovermelho.mod.events.registerEvents
@@ -18,6 +19,7 @@ object BVQuilt : ModInitializer {
     override fun onInitialize(mod: ModContainer) {
         BVClient.init(API_CONFIG)
         registerEvents()
+        registerCommands()
         LOGGER.info("Hello Quilt world from {}!", mod.metadata()?.name())
     }
 
