@@ -28,7 +28,7 @@ data class LinkResult(
 )
 
 
-suspend fun LinkResponse.handleErr (f: suspend (Error) -> Unit) : LinkResult? {
+fun LinkResponse.handleErr (f: (Error) -> Unit) : LinkResult? {
     return when (this) {
         is Error -> {
             f(this)
