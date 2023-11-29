@@ -11,7 +11,9 @@ object Routes {
         suspend fun GetAccountForPlayer(playerUUID: UUID) : LinkResponse {
             lateinit var serialized: LinkResponse;
 
-            BVClient.client.webSocket(BVClient.websocketEndpoint) {
+            BVClient.client.webSocket(BVClient.websocketEndpoint + "/auth/ws", {
+                header(HttpHeaders.Authorization, "Bearer ${BVClient.apiConfig.token.value()}")
+            }) {
                 sendSerialized(LinkQuery(playerUUID))
 
                 serialized = receiveDeserialized<LinkResponse>()
