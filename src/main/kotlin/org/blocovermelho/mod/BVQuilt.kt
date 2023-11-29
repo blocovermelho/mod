@@ -1,13 +1,17 @@
 package org.blocovermelho.mod
 
+import org.blocovermelho.mod.config.ApiSettings
+import org.blocovermelho.mod.config.ServerDetails
 import org.quiltmc.loader.api.ModContainer
+import org.quiltmc.loader.api.config.v2.QuiltConfig
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 object BVQuilt : ModInitializer {
     val LOGGER: Logger = LoggerFactory.getLogger("BVMod")
-
+    val API_CONFIG = QuiltConfig.create("bv-quilt", "api", ApiSettings::class.java)
+    val SERVER_DATA = QuiltConfig.create("bv-quilt", "server", ServerDetails::class.java)
     override fun onInitialize(mod: ModContainer) {
         LOGGER.info("Hello Quilt world from {}!", mod.metadata()?.name())
     }
