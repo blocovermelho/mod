@@ -7,7 +7,9 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
 
-typealias HttpResult<T> = Result<T, Pair<HttpStatusCode, HttpFailure>>
+typealias HttpError = Pair<HttpStatusCode, HttpFailure>
+
+typealias HttpResult<T> = Result<T, HttpError>
 
 @Serializable
 data class HttpFailure(

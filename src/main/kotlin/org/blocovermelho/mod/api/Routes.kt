@@ -15,6 +15,9 @@ object Routes {
         suspend fun ChangePassword(changePassword: ChangePassword): HttpResult<Boolean> =
             BVClient.Patch(BASE_PATH + "/changepw", changePassword)
 
+        suspend fun Resume(playerUUID: UUID): HttpResult<Boolean> =
+            BVClient.Patch<Boolean, Any>(BASE_PATH + "/$playerUUID/resume")
+
         suspend fun Login(serverUUID: UUID, loginRequest: LoginRequest): HttpResult<Boolean> =
             BVClient.Post(BASE_PATH + "/$serverUUID/login", loginRequest)
 
