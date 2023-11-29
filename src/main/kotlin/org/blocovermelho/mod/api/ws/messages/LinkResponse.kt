@@ -10,10 +10,11 @@ import java.util.*
 open class LinkResponse()
 
 @Serializable
-data class Exists(val exists: LinkResult) : LinkResponse()
+data class Exists(@SerialName("Exists") val exists: LinkResult) : LinkResponse()
 
 @Serializable
-data class Error(val error: String) : LinkResponse()
+data class Error(@SerialName("Error") val error: String) : LinkResponse() {
+}
 
 @Serializable
 data class LinkResult(
