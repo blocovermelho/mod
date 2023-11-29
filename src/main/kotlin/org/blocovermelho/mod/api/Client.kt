@@ -10,23 +10,24 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNamingStrategy
+import org.blocovermelho.mod.config.ApiSettings
 
 object BVClient {
     lateinit var client: HttpClient
-    lateinit var apiConfig: BVApiConfig
+    lateinit var apiConfig: ApiSettings
 
     lateinit var httpEndpoint: String
     lateinit var websocketEndpoint: String
 
     @ExperimentalSerializationApi
-    fun init(config: BVApiConfig) {
+    fun init(config: ApiSettings) {
         apiConfig = config
-        httpEndpoint = if (apiConfig.tls) {
-            "https://${apiConfig.endpoint}"
+        httpEndpoint = if (apiConfig.tls.value()) {
+            "https://${apiConfig.endpoint.value()}"
         } else {
-            "http://${apiConfig.endpoint}"
+            "http://${apiConfig.endpoint.value()}"
         }
-        websocketEndpoint = "ws://${apiConfig.endpoint}"
+        websocketEndpoint = "ws://${apiConfig.endpoint.value()}"
 
         client = HttpClient(CIO) {
             install(ContentNegotiation) {
@@ -42,13 +43,13 @@ object BVClient {
 
 suspend inline fun <reified T> BVClient.Get(path: String): HttpResult<T> {
     return client.m_get<T>(httpEndpoint + path) {
-        bearerAuth(apiConfig.token)
+        bearerAuth(apiConfig.token.value())
     }
 }
 
 suspend inline fun <reified T, reified A> BVClient.Post(path: String, body: A? = null): HttpResult<T> {
     return client.m_post<T>(httpEndpoint + path) {
-        bearerAuth(apiConfig.token)
+        bearerAuth(apiConfig.token.value())
         if (body != null) {
             contentType(ContentType.Application.Json)
             setBody(body)
@@ -58,7 +59,7 @@ suspend inline fun <reified T, reified A> BVClient.Post(path: String, body: A? =
 
 suspend inline fun <reified T, reified A> BVClient.Patch(path: String, body: A? = null): HttpResult<T> {
     return client.m_patch<T>(httpEndpoint + path) {
-        bearerAuth(apiConfig.token)
+        bearerAuth(apiConfig.token.value())
         if (body != null) {
             contentType(ContentType.Application.Json)
             setBody(body)
@@ -68,7 +69,7 @@ suspend inline fun <reified T, reified A> BVClient.Patch(path: String, body: A? 
 
 suspend inline fun <reified T> BVClient.Delete(path: String): HttpResult<T> {
     return client.m_delete<T>(httpEndpoint + path) {
-        bearerAuth(apiConfig.token)
+        bearerAuth(apiConfig.token.value())
     }
 }
 
