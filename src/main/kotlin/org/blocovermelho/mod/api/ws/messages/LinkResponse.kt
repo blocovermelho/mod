@@ -1,9 +1,11 @@
 package org.blocovermelho.mod.api.ws.messages
 
+import io.ktor.http.*
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.blocovermelho.mod.UUIDSerializer
+import org.blocovermelho.mod.api.HttpFailure
 import java.util.*
 
 @Serializable
@@ -14,6 +16,9 @@ data class Exists(@SerialName("Exists") val exists: LinkResult) : LinkResponse()
 
 @Serializable
 data class Error(@SerialName("Error") val error: String) : LinkResponse() {
+    fun into(): Pair<HttpStatusCode, HttpFailure> {
+        return Pair(HttpStatusCode.InternalServerError, HttpFailure(error, null))
+    }
 }
 
 @Serializable
