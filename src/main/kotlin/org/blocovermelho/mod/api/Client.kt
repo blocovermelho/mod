@@ -19,6 +19,11 @@ object BVClient {
     lateinit var httpEndpoint: String
     lateinit var websocketEndpoint: String
 
+    val json = Json {
+        namingStrategy = JsonNamingStrategy.SnakeCase
+        prettyPrint = true
+    }
+
     @ExperimentalSerializationApi
     fun init(config: ApiSettings) {
         apiConfig = config
@@ -31,10 +36,7 @@ object BVClient {
 
         client = HttpClient(CIO) {
             install(ContentNegotiation) {
-                json(Json {
-                    namingStrategy = JsonNamingStrategy.SnakeCase
-                    prettyPrint = true
-                })
+                json(json)
             }
         }
     }
