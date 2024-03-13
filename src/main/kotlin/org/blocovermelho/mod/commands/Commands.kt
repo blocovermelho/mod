@@ -15,6 +15,8 @@ fun registerCommands() {
             RegisterCommand.register(this)
             LinkCommand.register(this)
             ChangePasswordCommand.register(this)
+            VerifyCommand.register(this)
+            GringoCommand.register(this)
 
             AdminCommands.register(this)
 

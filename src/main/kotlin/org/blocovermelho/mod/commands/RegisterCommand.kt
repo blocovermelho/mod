@@ -23,7 +23,7 @@ import org.quiltmc.qkl.library.text.literal
 object RegisterCommand {
     fun register(dispatcher: CommandDispatcher<ServerCommandSource>) {
         dispatcher.register("registrar") {
-            requires { it.isPlayer && !it.player!!.isLogged() }
+            requires { it.isPlayer && !it.player!!.isLogged() && !it.player!!.isBypassing() }
             required(word("senha")) { senha ->
                 required(word("repetirSenha")) { repetirSenha ->
                     launch {

@@ -7,6 +7,9 @@ fun ServerPlayerEntity.isLogged() : Boolean {
     return BVQuilt.Store.LoggedPlayers.contains(this.uuid)
 }
 
+fun ServerPlayerEntity.isBypassing() : Boolean {
+    return BVQuilt.Store.BypassCidrCheck.contains(this.uuid)
+}
 
 fun ServerPlayerEntity.updateCommandTree() {
     this.server.playerManager.sendCommandTree(this)

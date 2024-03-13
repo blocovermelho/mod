@@ -21,6 +21,7 @@ object BVClient {
     lateinit var httpEndpoint: String
     lateinit var websocketEndpoint: String
 
+    @OptIn(ExperimentalSerializationApi::class)
     val json = Json {
         namingStrategy = JsonNamingStrategy.SnakeCase
         prettyPrint = true

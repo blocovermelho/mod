@@ -21,7 +21,7 @@ import org.quiltmc.qkl.library.text.*
 object LoginCommand {
      fun register(dispatcher: CommandDispatcher<ServerCommandSource>) {
         dispatcher.register("login") {
-            requires { it.isPlayer && !it.player!!.isLogged() }
+            requires { it.isPlayer && !it.player!!.isLogged() && !it.player!!.isBypassing() }
             required(word("senha")) { password ->
                 launch {
                     val player = this.source.player!!

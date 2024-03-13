@@ -26,6 +26,18 @@ object Routes {
 
         suspend fun Session(userUUID: UUID, userIP: String): HttpResult<Boolean> =
             BVClient.Get(BASE_PATH + "/session?uuid=$userUUID&ip=$userIP")
+
+        object CIDR {
+            suspend fun Check(userUUID: UUID, userIP: String): HttpResult<Cidr.Response> =
+                BVClient.Get(BASE_PATH + "/cidr?uuid=$userUUID&ip=$userIP")
+            suspend fun Allow(userUUID: UUID, userIP: String, nonce: String): HttpResult<Boolean>  =
+                BVClient.Post<Boolean, Any>(BASE_PATH + "/allow?uuid=$userUUID&nonce=$nonce&ip=$userIP")
+
+            suspend fun Ban(userUUID: UUID, userIP: String): HttpResult<Ban.Response>  =
+                BVClient.Post(BASE_PATH + "/ban?uuid=$userUUID&ip=$userIP", "\"Automatic\"")
+            suspend fun Ban(userUUID: UUID, userIP: String, modUUID: UUID): HttpResult<Ban.Response>  =
+                BVClient.Post(BASE_PATH + "/ban?uuid=$userUUID&ip=$userIP", Ban.Manual(modUUID))
+        }
     }
 
     object Server {

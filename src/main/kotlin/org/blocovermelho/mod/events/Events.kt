@@ -5,4 +5,5 @@ fun registerEvents() {
     onPlayerJoin()
     onPlayerLeft()
     onServerReady()
+    onLoginAttempt()
 }

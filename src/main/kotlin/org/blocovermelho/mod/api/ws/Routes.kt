@@ -4,36 +4,64 @@ import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.websocket.*
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.launch
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import org.blocovermelho.mod.BVQuilt
 import org.blocovermelho.mod.api.BVClient
-import org.blocovermelho.mod.api.ws.messages.Error
-import org.blocovermelho.mod.api.ws.messages.Exists
-import org.blocovermelho.mod.api.ws.messages.LinkQuery
-import org.blocovermelho.mod.api.ws.messages.LinkResponse
-import java.util.UUID
+import org.blocovermelho.mod.api.ws.handlers.cidr.handleCidrSyn
+import org.blocovermelho.mod.api.ws.handlers.cidr.handleCidrSynAwk
+import org.blocovermelho.mod.api.ws.handlers.handleLinkResponse
 
 object Routes {
-    object Discord {
-        suspend fun GetAccountForPlayer(playerUUID: UUID) : LinkResponse {
-            lateinit var serialized: LinkResponse;
+    private suspend fun DefaultClientWebSocketSession.sendMessages() {
+        BVQuilt.LOGGER.info("[Websocket-Send-Thread] Initialized")
+        while (true) {
+            BVQuilt.Store.Channels.Outgoing.Messages.consumeEach {
+                BVQuilt.LOGGER.info("[Websocket-Send-Thread] Got Socket Event")
+                outgoing.send(Frame.Text(Json.encodeToString(SocketEventSerializer, it)))
+            }
+        }
+    }
 
-            BVClient.client.webSocket(BVClient.websocketEndpoint + "/auth/ws", {
-                header(HttpHeaders.Authorization, "Bearer ${BVClient.apiConfig.token.value()}")
-            }) {
-                sendSerialized(LinkQuery(playerUUID))
+    private suspend fun DefaultClientWebSocketSession.readMessages() {
+        BVQuilt.LOGGER.info("[Websocket-Read-Thread] Initialized.")
+        while (true) {
+            incoming.consumeEach {
+                val string = it.readBytes().decodeToString()
+                BVQuilt.LOGGER.info("[Websocket-Read-Thread] Frame Data: $string")
+                val serialized = try {
+                    Json.decodeFromString(SocketEventSerializer, string);
+                } catch (err: SerializationException ) {
+                    BVQuilt.LOGGER.error("[Websocket-Read-Thread] SerializationException: $err")
+                    null
+                }
 
-                val bytes = incoming.receive().readBytes()
-                val str = bytes.decodeToString()
+                BVQuilt.LOGGER.info("[Websocket-Read-Thread] Could Serialize: ${serialized != null}")
 
-                serialized = try {
-                    Json.decodeFromString<Exists>(str)
-                } catch (err: SerializationException) {
-                    Json.decodeFromString<Error>(str)
+                when(serialized) {
+                    is SocketEvent.CIDR_SYN -> handleCidrSyn(serialized)
+                    is SocketEvent.CIDR_SYN_AWK -> handleCidrSynAwk(serialized)
+                    is SocketEvent.ERROR -> {}
+                    is SocketEvent.LINK_RESPONSE -> handleLinkResponse(serialized)
+                    else -> {
+                        BVQuilt.LOGGER.info("[Websocket-Read-Thread] Unknown message received.")
+                    }
                 }
             }
+        }
+    }
+    suspend fun handleWebsocket() {
+        BVClient.client.webSocket(BVClient.websocketEndpoint + "/auth/ws", {
+            header(HttpHeaders.Authorization, "Bearer ${BVClient.apiConfig.token.value()}")
+        }) {
+            val readThread = launch { readMessages() }
+            val sendThread = launch { sendMessages() }
 
-            return serialized
+            readThread.join()
+            sendThread.cancelAndJoin()
         }
     }
 }

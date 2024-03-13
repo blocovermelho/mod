@@ -10,8 +10,52 @@ object Other {
         }
         action()
     }
+
+    fun TextBuilder.newIdentity() {
+        serverHeader {
+            bold {
+                color(Colors.AUTH){
+                    literal("Um novo IP foi detectado\n")
+                }
+            }
+            color(Color.YELLOW) {
+                literal("Verifique sua identidade.")
+            }
+        }
+    }
 }
 
+
+object Mimicry {
+
+    // Mimics Patbox's BanHammer Screen
+    // Since we used that mod for handling per-server bans
+    // It would be funny if skid bans couldn't possibly be distinguished from normal bans
+    object BanHammer {
+        //TODO: Idea of letting the reason be user-generated.
+        fun TextBuilder.banMessage(reason: String, issuer: String) {
+            bold {
+                color(Color.RED) {
+                    literal("You are banned\n")
+                }
+            }
+            reason(reason)
+            by(issuer)
+            kvp("Expires In", "From 365 to 1825 day(s)")
+        }
+
+        private fun TextBuilder.reason(reason: String) = kvp("Reason", reason)
+        private fun TextBuilder.by(issuer: String) = kvp("By", issuer)
+        private fun TextBuilder.kvp(key: String, value: String) {
+            color(Color.GREY) {
+                literal("$key: ")
+            }
+            color(Color.YELLOW){
+                literal("$value\n")
+            }
+        }
+    }
+}
 
 
 object Commands {
@@ -39,6 +83,13 @@ object Commands {
     fun TextBuilder.link( action: TextBuilder.() -> Unit ) {
         bracketed(innerColor = Colors.LINK) {
             literal("Link")
+        }
+        action()
+    }
+
+    fun TextBuilder.ban(action: TextBuilder.() -> Unit) {
+        bracketed (innerColor = Colors.ADMIN, open = "<", close = ">") {
+            literal("Banimento")
         }
         action()
     }

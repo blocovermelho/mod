@@ -4,7 +4,7 @@ import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.util.ActionResult
 import org.blocovermelho.mod.ext.isLogged
 
-val validCommands = listOf("login", "link", "registrar")
+val validCommands = listOf("login", "link", "registrar", "verificar")
 
 fun onPlayerChat(spe: ServerPlayerEntity, message: String) : ActionResult {
     if(spe.isLogged()) {
