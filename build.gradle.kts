@@ -134,6 +134,11 @@ tasks {
 	}
 }
 
+fun DependencyHandler.shadowRuntimeOnly(dependency: Any) {
+	modRuntimeOnly(dependency)
+	shadow(dependency)
+}
+
 val targetJavaVersion = JavaVersion.toVersion(javaVersion)
 if (JavaVersion.current() < targetJavaVersion) {
 	kotlin.jvmToolchain(javaVersion)
