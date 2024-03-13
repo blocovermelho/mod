@@ -81,12 +81,12 @@ dependencies {
 
 	modImplementation(libs.qkl)
 
-	shadow(libs.kotlinx.serialization)
+	shadowRuntimeOnly(libs.kotlinx.serialization)
 
-	shadow(libs.ktor.core)
-	shadow(libs.ktor.cio)
-	shadow(libs.ktor.contentnegotiation)
-	shadow(libs.ktor.json)
+	shadowRuntimeOnly(libs.ktor.core)
+	shadowRuntimeOnly(libs.ktor.cio)
+	shadowRuntimeOnly(libs.ktor.contentnegotiation)
+	shadowRuntimeOnly(libs.ktor.json)
 }
 
 tasks {
