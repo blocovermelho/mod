@@ -10,6 +10,7 @@ loom = "1.+"
 ktx-ser = "1.6.0"
 ktor = "2.3.6"
 shadow = "8.1.1"
+server_translations = "2.0.0+1.20"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
@@ -26,6 +27,7 @@ ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-contentnegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+server_translations = { module = "xyz.nucleoid:server-translations-api", version.ref = "server_translations"}
 
 [bundles]
 quilted_fabric_api = ["qfapi", "qfapi_deprecated"]

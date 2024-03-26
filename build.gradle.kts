@@ -24,7 +24,7 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
-	// maven("https://maven.nucleoid.xyz")
+	maven("https://maven.nucleoid.xyz")
 }
 
 val transitiveInclude: Configuration by configurations.creating
@@ -88,6 +88,9 @@ dependencies {
 
 	include(libs.kotlinx.serialization)
 	modImplementation(libs.kotlinx.serialization)
+
+	include(libs.server.translations)
+	modImplementation(libs.server.translations)
 
 
 	transInclude(libs.ktor.core)
