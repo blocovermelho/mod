@@ -10,15 +10,14 @@ import org.blocovermelho.mod.ext.launch
 import org.blocovermelho.mod.ext.*
 import org.blocovermelho.mod.ext.Commands.registrar
 import org.blocovermelho.mod.ext.Helpers.command
+import org.blocovermelho.mod.ext.Rich.colorize
+import org.blocovermelho.mod.ext.Rich.lines
 import org.quiltmc.qkl.library.brigadier.argument.value
 import org.quiltmc.qkl.library.brigadier.argument.word
 import org.quiltmc.qkl.library.brigadier.register
 import org.quiltmc.qkl.library.brigadier.required
 import org.quiltmc.qkl.library.brigadier.util.sendFeedback
-import org.quiltmc.qkl.library.text.Color
-import org.quiltmc.qkl.library.text.buildText
-import org.quiltmc.qkl.library.text.color
-import org.quiltmc.qkl.library.text.literal
+import org.quiltmc.qkl.library.text.*
 
 object RegisterCommand {
     fun register(dispatcher: CommandDispatcher<ServerCommandSource>) {
@@ -34,12 +33,10 @@ object RegisterCommand {
                             sendFeedback {
                                 buildText {
                                     registrar {
-                                        literal(" As senhas não são idênticas.\n")
-                                        literal(" Verifique se")
-                                        color(Color.YELLOW) {
-                                            literal("\"$rep\"")
-                                        }
-                                        literal(" é igual a senha digitada.")
+                                        lines(
+                                            { translatable("bv.register.mismatch") },
+                                            { translatable("bv.register.verify", colorize("\"$rep\"", Color.YELLOW))}
+                                        )
                                     }
                                 }
                             }
@@ -56,10 +53,11 @@ object RegisterCommand {
                             sendFeedback {
                                 buildText {
                                     registrar {
-                                        literal(" Você ainda não linkou sua conta do discord.\n")
-                                        literal(" Use ")
-                                        command("/link")
-                                        literal(" para linkar sua conta do discord.")
+                                        lines(
+                                            { translatable("bv.register.self.unlinked") },
+                                            { translatable("bv.action.use", buildText { command("/link") })},
+                                            { translatable("bv.link.hint")}
+                                        )
                                     }
                                 }
                             }
@@ -76,7 +74,7 @@ object RegisterCommand {
                         player.changeGameMode(BVQuilt.SERVER_DATA.postLoginGamemode.value())
                         player.updateCommandTree()
 
-                        sendFeedback { buildText { registrar { literal("Conta criada com sucesso.") } } }
+                        sendFeedback { buildText { registrar { translatable("bv.register.success") } } }
                     }
                 }
             }
