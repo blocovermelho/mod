@@ -10,10 +10,8 @@ import org.blocovermelho.mod.ext.Commands.link
 import org.blocovermelho.mod.ext.Helpers.hint
 import org.blocovermelho.mod.ext.Helpers.tooltip
 import org.blocovermelho.mod.ext.Other.serverHeader
-import org.quiltmc.qkl.library.text.Color
-import org.quiltmc.qkl.library.text.buildText
-import org.quiltmc.qkl.library.text.color
-import org.quiltmc.qkl.library.text.literal
+import org.blocovermelho.mod.ext.Rich
+import org.quiltmc.qkl.library.text.*
 import java.net.SocketAddress
 
 object NotificationService {
@@ -59,6 +57,12 @@ object NotificationService {
                 }
             }
         })
+    }
+
+    fun TextBuilder.playerNotFound (target: ServerPlayerEntity) {
+        serverHeader {
+            translatable("bv.player.not_found", Rich.colorize(target.gameProfile.name, Color.YELLOW))
+        }
     }
 
     fun newBan(banReason: String, manager: PlayerManager, gameProfile: GameProfile, address: SocketAddress) {
