@@ -1,0 +1,15 @@
+{
+  "bv.user.not_found": "User: %s was not found",
+  "bv.player.not_found": "Player: %s was not found",
+  "bv.actor.staff":"Staffer: %s",
+  "bv.action.clipboard": "Click to copy %s",
+  "bv.action.use": "Use %s",
+  "bv.link.hint": "to link your discord account.",
+  "bv.register.hint" : "to make a new password.",
+  "bv.unlink.of.success": "The discord link of % was removed successfully.",
+  "bv.unlink.self.success": "Your discord link was removed successfully.",
+  "bv.unlink.see_previous": "to see what was the previous discord account associated with your minecraft account.",
+  "bv.revoke.of.success": "The account of %s was removed successfully.",
+  "bv.revoke.self.success": "Your account was removed successfully.",
+  "bv.mask.discord_id": "discord mention"
+}

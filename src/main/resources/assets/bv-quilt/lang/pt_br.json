@@ -1,0 +1,15 @@
+{
+  "bv.user.not_found": "O usuário %s não consta no sistema",
+  "bv.player.not_found": "O jogador %s não consta no sistema",
+  "bv.actor.staff":"Staff responsável: %s",
+  "bv.action.clipboard": "Clique para copiar %s",
+  "bv.action.use": "Use %s",
+  "bv.link.hint": "para linkar sua conta.",
+  "bv.register.hint" : "para criar uma nova senha para sua conta.",
+  "bv.unlink.of.success": "O Link de % foi apagado com sucesso.",
+  "bv.unlink.self.success": "O link com o seu discord foi apagado com sucesso.",
+  "bv.unlink.see_previous": "para ver qual era o discord que estava linkado à sua conta previamente.",
+  "bv.revoke.of.success": "A Conta de %s foi apagada com sucesso.",
+  "bv.revoke.self.success": "A sua conta foi apagada com sucesso.",
+  "bv.mask.discord_id": "menção do discord"
+}
