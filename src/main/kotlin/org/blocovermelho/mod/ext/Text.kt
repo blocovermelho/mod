@@ -1,14 +1,42 @@
 package org.blocovermelho.mod.ext
 
 import org.blocovermelho.mod.ext.Helpers.bracketed
+import org.blocovermelho.mod.ext.Rich.lineOf
 import org.quiltmc.qkl.library.text.*
+
+object Rich {
+    private fun TextBuilder.intersperse(separator: TextBuilder.() -> Unit, vararg actions: TextBuilder.() -> Unit) {
+        actions.forEach {
+            it()
+            separator()
+        }
+    }
+
+    fun TextBuilder.lines(vararg actions: TextBuilder.() -> Unit) = intersperse(separator = {
+        literal("\n")
+    }, actions = actions)
+
+    fun TextBuilder.lineOf(vararg actions: TextBuilder.() -> Unit) = intersperse(separator =  {
+        literal(" ")
+    }, actions = actions)
+
+    fun colorize(value: String, color: Color) = buildText {
+        color(color) {
+            literal(value)
+        }
+    }
+}
 
 object Other {
     fun TextBuilder.serverHeader(action: TextBuilder.() -> Unit) {
-        bracketed (innerColor = Colors.COMMAND_GREEN, open = "<", close = ">") {
-            literal("Bloco Vermelho")
-        }
-        action()
+        lineOf(
+            {
+                bracketed (innerColor = Colors.COMMAND_GREEN, open = "<", close = ">") {
+                literal("Bloco Vermelho")
+                }
+            },
+            action
+        )
     }
 
     fun TextBuilder.newIdentity() {
