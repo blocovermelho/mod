@@ -11,6 +11,8 @@ import org.blocovermelho.mod.api.models.LoginRequest
 import org.blocovermelho.mod.ext.launch
 import org.blocovermelho.mod.ext.Commands.login
 import org.blocovermelho.mod.ext.Helpers.command
+import org.blocovermelho.mod.ext.Rich.lineOf
+import org.blocovermelho.mod.ext.Rich.lines
 import org.quiltmc.qkl.library.brigadier.argument.value
 import org.quiltmc.qkl.library.brigadier.argument.word
 import org.quiltmc.qkl.library.brigadier.register
@@ -35,10 +37,15 @@ object LoginCommand {
                         sendFeedback {
                             buildText {
                                 login {
-                                    literal(" Você ainda não foi registrado.\n")
-                                    literal(" Use o comando ")
-                                    command("/registrar")
-                                    literal(" para registrar uma senha.")
+                                    lines(
+                                        { translatable("bv.player.self.not_registered") },
+                                        {
+                                            lineOf(
+                                                { translatable("bv.action.use", buildText { command("/registrar") }) },
+                                                { translatable("bv.register.hint") }
+                                            )
+                                        }
+                                    )
                                 }
                             }
                         }
@@ -50,7 +57,7 @@ object LoginCommand {
                     } ?: return@launch
 
                     if (!correct) {
-                        sendFeedback { buildText { login { literal(" Senha incorreta.") } } }
+                        sendFeedback { buildText { login { translatable("bv.login.failed") } } }
                         return@launch
                     }
 
@@ -58,7 +65,7 @@ object LoginCommand {
                     player.changeGameMode(BVQuilt.SERVER_DATA.postLoginGamemode.value())
 
                     player.updateCommandTree()
-                    sendFeedback { buildText { login { literal(" Logado com sucesso.") } } }
+                    sendFeedback { buildText { login { translatable("bv.login.success")  } } }
                 }
             }
         }
