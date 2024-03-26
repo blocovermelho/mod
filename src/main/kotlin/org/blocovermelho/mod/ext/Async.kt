@@ -1,6 +1,7 @@
 package org.blocovermelho.mod.ext
 
 import com.mojang.brigadier.builder.ArgumentBuilder
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -17,6 +18,14 @@ typealias SuspendSPNH = suspend ServerPlayNetworkHandler.() -> Unit
 typealias SuspendMS = suspend MinecraftServer.() -> Unit
 
 fun <S> ArgumentBuilder<S, *>.launch(command: SuspendCommandAction<S>) {
+    execute {
+        CoroutineManager.scope.launch {
+            command(this@execute)
+        }
+    }
+}
+
+fun <S> LiteralArgumentBuilder<S>.launch (command: SuspendCommandAction<S>) {
     execute {
         CoroutineManager.scope.launch {
             command(this@execute)
