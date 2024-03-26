@@ -24,7 +24,10 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
+	// maven("https://maven.nucleoid.xyz")
 }
+
+val transitiveInclude: Configuration by configurations.creating
 
 tasks {
 	remapJar {
@@ -40,13 +43,13 @@ tasks {
 		)
 		archiveClassifier.set("dev-all")
 
-		// isEnableRelocation = true
-		// relocationPrefix = "org.blocovermelho.impl.deps"
-
 		exclude("kotlin/**", "kotlinx/**", "javax/**", "META-INF")
 		exclude("org/intellij/**", "org/jetbrains/annotations/**")
 		exclude("com/google/gson/**")
 		exclude("org/slf4j/**")
+
+		configurations = listOf(transitiveInclude)
+		duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
 		// minimize()
 	}
@@ -81,12 +84,21 @@ dependencies {
 
 	modImplementation(libs.qkl)
 
-	shadowRuntimeOnly(libs.kotlinx.serialization)
+	// modImplementation(include()!!)
 
-	shadowRuntimeOnly(libs.ktor.core)
-	shadowRuntimeOnly(libs.ktor.cio)
-	shadowRuntimeOnly(libs.ktor.contentnegotiation)
-	shadowRuntimeOnly(libs.ktor.json)
+	include(libs.kotlinx.serialization)
+	modImplementation(libs.kotlinx.serialization)
+
+
+	transInclude(libs.ktor.core)
+	transInclude(libs.ktor.cio)
+	transInclude(libs.ktor.contentnegotiation)
+	transInclude(libs.ktor.json)
+
+}
+
+fun DependencyHandlerScope.transInclude(it: Provider<MinimalExternalModuleDependency>) {
+	transitiveInclude(implementation(it.get().group, it.get().name, it.get().version))
 }
 
 tasks {
