@@ -40,15 +40,15 @@ tasks {
 		)
 		archiveClassifier.set("dev-all")
 
-		isEnableRelocation = true
-		relocationPrefix = "org.blocovermelho.impl.deps"
+		// isEnableRelocation = true
+		// relocationPrefix = "org.blocovermelho.impl.deps"
 
 		exclude("kotlin/**", "kotlinx/**", "javax/**", "META-INF")
 		exclude("org/intellij/**", "org/jetbrains/annotations/**")
 		exclude("com/google/gson/**")
 		exclude("org/slf4j/**")
 
-		minimize()
+		// minimize()
 	}
 }
 // All the dependencies are declared at gradle/libs.version.toml and referenced with "libs.<id>"
