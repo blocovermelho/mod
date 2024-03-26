@@ -157,6 +157,16 @@ object Helpers {
         }
     }
 
+    fun TextBuilder.translatableClipboard(data: String, translate: String) {
+        bracketed (open=">", close ="<", innerColor = Color.YELLOW, bracketColor = Colors.COMMAND_GREEN){
+            tooltip({copyHint(data)}){
+                copy(data) {
+                    translatable(translate)
+                }
+            }
+        }
+    }
+
     fun TextBuilder.maskedClipboard(data: String, mask: String) {
         bracketed (open=">", close ="<", innerColor = Color.YELLOW, bracketColor = Colors.COMMAND_GREEN){
             tooltip({copyHint(data)}){
