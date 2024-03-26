@@ -65,6 +65,11 @@ object NotificationService {
         }
     }
 
+    fun TextBuilder.staffActor(staff: ServerPlayerEntity) {
+        translatable("bv.actor.staff", Rich.colorize(staff.gameProfile.name, Color.GREY))
+    }
+
+
     fun newBan(banReason: String, manager: PlayerManager, gameProfile: GameProfile, address: SocketAddress) {
         manager.broadcastSystemMessage(buildText {
             ban {
