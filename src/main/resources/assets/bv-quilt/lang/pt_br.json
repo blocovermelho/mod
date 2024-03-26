@@ -14,7 +14,7 @@
   "bv.register.success": "Conta criada com sucesso.",
   "bv.register.hint": "para criar sua conta.",
   "bv.change_pass.hint" : "para criar uma nova senha para sua conta.",
-  "bv.unlink.of.success": "O Link de % foi apagado com sucesso.",
+  "bv.unlink.of.success": "O Link de %s foi apagado com sucesso.",
   "bv.unlink.self.success": "O link com o seu discord foi apagado com sucesso.",
   "bv.unlink.see_previous": "para ver qual era o discord que estava linkado à sua conta previamente.",
   "bv.revoke.of.success": "A Conta de %s foi apagada com sucesso.",
