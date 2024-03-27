@@ -6,9 +6,14 @@ import org.blocovermelho.mod.BVQuilt
 import org.blocovermelho.mod.api.Routes
 import org.blocovermelho.mod.api.handleErr
 import org.blocovermelho.mod.ext.Commands.login
+import org.blocovermelho.mod.ext.Helpers.bracketed
 import org.blocovermelho.mod.ext.Helpers.command
 import org.blocovermelho.mod.ext.Helpers.maskedUri
 import org.blocovermelho.mod.ext.Other.serverHeader
+import org.blocovermelho.mod.ext.Rich.array
+import org.blocovermelho.mod.ext.Rich.colorize
+import org.blocovermelho.mod.ext.Rich.lineOf
+import org.blocovermelho.mod.ext.Rich.lines
 import org.blocovermelho.mod.ext.sendErr
 import org.blocovermelho.mod.ext.updateCommandTree
 import org.quiltmc.qkl.library.text.*
@@ -27,10 +32,7 @@ suspend fun checkSession(player: ServerPlayerEntity)  {
         BVQuilt.Store.LoggedPlayers.add(player.uuid)
         player.sendSystemMessage(buildText {
             login {
-                literal("Sessão restaurada. Seja bem vinde de volta ")
-                color(Color.YELLOW) {
-                    literal(player.gameProfile.name)
-                }
+                translatable("bv.session.restored", colorize(player.gameProfile.name, Color.YELLOW))
             }
         })
 
@@ -40,9 +42,13 @@ suspend fun checkSession(player: ServerPlayerEntity)  {
     } else {
         player.sendSystemMessage(buildText {
             login {
-                literal(" Sessão expirada. Use")
-                command("/login")
-                literal(" senha para logar no servidor.")
+                lines(
+                    { translatable("bv.session.expired") },
+                    { lineOf(
+                        { translatable("bv.action.use", buildText { command("/login")  }) },
+                        { translatable("bv.login.hint") }
+                    )}
+                )
             }
         })
     }
@@ -54,23 +60,25 @@ suspend fun checkSession(player: ServerPlayerEntity)  {
 fun sendServerDetails(player: ServerPlayerEntity) {
     player.sendSystemMessage(buildText {
         serverHeader {
-            literal(" Olá ")
-            color(Color.YELLOW){
-                literal(player.gameProfile.name)
-            }
-            literal(" seja bem-vinde ao ")
-            color(Color.DARK_GREEN) {
-                literal(BVQuilt.SERVER_DATA.name.value())
-            }
-            literal("!\nVersões aceitas nesse servidor: ")
-            color(Color.RED) {
-                BVQuilt.SERVER_DATA.supportedVersions.value().forEach {
-                    literal("$it ")
-                }
-            }
-            if(BVQuilt.SERVER_DATA.modpack.name.value().isEmpty().not()) {
-                literal("\nModpack recomendado: ")
-                maskedUri(BVQuilt.SERVER_DATA.modpack.uri.value(),BVQuilt.SERVER_DATA.modpack.name.value())
+            lines(
+                { translatable("bv.welcome.greet", colorize(player.gameProfile.name, Color.YELLOW), colorize(BVQuilt.SERVER_DATA.name.value(), Color.DARK_GREEN)) },
+                { translatable("bv.welcome.versions", buildText {
+                    array(BVQuilt.SERVER_DATA.supportedVersions.value()) {
+                        color(Color.YELLOW) {
+                            literal(it)
+                        }
+                    }
+                })}
+            )
+
+            if (BVQuilt.SERVER_DATA.modpack.name.value().isNotEmpty()) {
+                literal("\n")
+                translatable("bv.welcome.modpack", buildText {
+                    lineOf(
+                        { maskedUri(BVQuilt.SERVER_DATA.modpack.uri.value(),BVQuilt.SERVER_DATA.modpack.name.value()) },
+                        { bracketed(open = "(v.", close = ")"){ literal(BVQuilt.SERVER_DATA.modpack.version.value()) } }
+                    )
+                })
             }
         }
     })
@@ -81,21 +89,21 @@ suspend fun sendAwkMessage(player: ServerPlayerEntity) {
     if (!acc) {
         player.sendSystemMessage(buildText {
             serverHeader {
-                literal(" Vi aqui que essa provavelmente é a primeira vez que joga no servidor.\n")
-                literal(" Para jogar conosco é ")
-                color(Color.RED) {
-                    bold {
-                        literal("obrigatório")
-                    }
-                }
-                literal(" que você esteja no nosso discord.\n")
-                literal(" Peça a quem tenha te convidado o link para o nosso discord, ou simplesmente ignore essa mensagem e explore o mundo!\n")
+                lines(
+                    { translatable("bv.welcome.first_join[0]") },
+                    { lineOf(
+                        {translatable("bv.welcome.first_join[1]") },
+                        {color(Color.RED) { bold { translatable("bv.required") }}},
+                        {translatable("bv.welcome.first_join[2]")}
+                    )},
+                    { translatable("bv.welcome.first_join[3]")}
+                )
             }
 
+            literal("\n")
+
             serverHeader {
-                literal(" Se você já estiver no nosso discord, use o comando")
-                command("/link")
-                literal(" para conectar sua conta do discord.")
+                translatable("bv.welcome.first_join[4]", buildText { command("/link") })
             }
         })
     }
