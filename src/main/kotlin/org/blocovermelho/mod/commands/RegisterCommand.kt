@@ -11,6 +11,7 @@ import org.blocovermelho.mod.ext.*
 import org.blocovermelho.mod.ext.Commands.registrar
 import org.blocovermelho.mod.ext.Helpers.command
 import org.blocovermelho.mod.ext.Rich.colorize
+import org.blocovermelho.mod.ext.Rich.lineOf
 import org.blocovermelho.mod.ext.Rich.lines
 import org.quiltmc.qkl.library.brigadier.argument.value
 import org.quiltmc.qkl.library.brigadier.argument.word
@@ -55,8 +56,12 @@ object RegisterCommand {
                                     registrar {
                                         lines(
                                             { translatable("bv.register.self.unlinked") },
-                                            { translatable("bv.action.use", buildText { command("/link") })},
-                                            { translatable("bv.link.hint")}
+                                            {
+                                                lineOf(
+                                                    { translatable("bv.action.use", buildText { command("/link") }) },
+                                                    { translatable("bv.link.hint") }
+                                                )
+                                            }
                                         )
                                     }
                                 }
