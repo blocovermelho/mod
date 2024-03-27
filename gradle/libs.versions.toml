@@ -11,6 +11,7 @@ ktx-ser = "1.6.0"
 ktor = "2.3.6"
 shadow = "8.1.1"
 server_translations = "2.0.0+1.20"
+carpet = "1.20-1.4.112+v230608"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
@@ -28,6 +29,7 @@ ktor-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-contentnegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 server_translations = { module = "xyz.nucleoid:server-translations-api", version.ref = "server_translations"}
+carpet = { module = "carpet:fabric-carpet", version.ref = "carpet" }
 
 [bundles]
 quilted_fabric_api = ["qfapi", "qfapi_deprecated"]

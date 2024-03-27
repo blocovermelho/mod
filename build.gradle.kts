@@ -25,6 +25,7 @@ repositories {
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
 	maven("https://maven.nucleoid.xyz")
+	maven("https://masa.dy.fi/maven")
 }
 
 val transitiveInclude: Configuration by configurations.creating
@@ -91,6 +92,9 @@ dependencies {
 
 	include(libs.server.translations)
 	modImplementation(libs.server.translations)
+
+	// For EntityPlayerMPFake
+	modImplementation(libs.carpet)
 
 
 	transInclude(libs.ktor.core)
