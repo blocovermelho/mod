@@ -121,7 +121,7 @@ suspend fun CommandContext<ServerCommandSource>.revokeAccount(target: ServerPlay
         serverHeader {
             lineOf(
                 { translatable("bv.action.use", buildText { command("/registrar") }) },
-                { translatable("bv.register.hint") }
+                { translatable("bv.change_pass.hint") }
             )
         }
     })
