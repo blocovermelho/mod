@@ -6,9 +6,11 @@ import org.quiltmc.qkl.library.text.*
 
 object Rich {
     private fun TextBuilder.intersperse(separator: TextBuilder.() -> Unit, vararg actions: TextBuilder.() -> Unit) {
-        actions.forEach {
+        actions.forEachIndexed { idx, it ->
             it()
-            separator()
+            if (idx != actions.lastIndex) {
+                separator()
+            }
         }
     }
 
