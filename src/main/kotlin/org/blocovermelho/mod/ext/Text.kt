@@ -22,6 +22,14 @@ object Rich {
         literal(" ")
     }, actions = actions)
 
+    fun TextBuilder.array(data: List<String>, action: TextBuilder.(String) -> Unit) {
+        data.forEachIndexed { idx, it ->
+            action(it)
+            if (idx != data.lastIndex) {
+                literal(", ")
+            }
+        }
+    }
     fun colorize(value: String, color: Color) = buildText {
         color(color) {
             literal(value)
