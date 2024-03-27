@@ -7,10 +7,11 @@ import net.minecraft.server.network.ServerPlayerEntity
 import org.blocovermelho.mod.api.ws.messages.LinkResult
 import org.blocovermelho.mod.ext.Commands.ban
 import org.blocovermelho.mod.ext.Commands.link
-import org.blocovermelho.mod.ext.Helpers.hint
 import org.blocovermelho.mod.ext.Helpers.tooltip
 import org.blocovermelho.mod.ext.Other.serverHeader
 import org.blocovermelho.mod.ext.Rich
+import org.blocovermelho.mod.ext.Rich.lineOf
+import org.blocovermelho.mod.ext.Rich.lines
 import org.quiltmc.qkl.library.text.*
 import java.net.SocketAddress
 
@@ -18,23 +19,31 @@ object NotificationService {
     fun successfulLink(player: ServerPlayerEntity, result: LinkResult) {
         player.sendSystemMessage(buildText {
             link {
-                literal(" Sua conta foi conectada com o discord.")
+                translatable("bv.link.success")
             }
         })
         player.sendSystemMessage(buildText {
-            color(Color.GREEN) {
-                literal(result.discordUsername)
-            }
-            color(Color.YELLOW) {
-                literal(" => ")
-            }
-            color(Color.GREEN) {
-                literal(player.gameProfile.name)
-            }
+            lineOf(
+                { literal("Discord:") },
+                {
+                    lineOf({
+                        literal(result.discordUsername)
+                    }, {
+                        color(Color.YELLOW) {
+                            literal("<=>")
+                        }
+                    }, {
+                        literal(player.gameProfile.name)
+                    })
+
+                }
+            )
         })
         player.sendSystemMessage(buildText {
             serverHeader {
-                hint(" Caso essa não for sua conta", "contate a staff imediatamente.")
+                color(Color.RED) {
+                    translatable("bv.link.warning")
+                }
             }
         })
     }
@@ -43,7 +52,7 @@ object NotificationService {
         player.sendSystemMessage(buildText {
             serverHeader {
                 color(Color.GREEN) {
-                    literal(" Identidade verificada com sucesso.")
+                    translatable("bv.identity.success")
                 }
             }
         })
@@ -53,13 +62,13 @@ object NotificationService {
         player.sendSystemMessage(buildText {
             serverHeader {
                 color(Color.RED) {
-                    literal(" Falha ao verificar sua identidade.")
+                    translatable("bv.identity.failed")
                 }
             }
         })
     }
 
-    fun TextBuilder.playerNotFound (target: ServerPlayerEntity) {
+    fun TextBuilder.playerNotFound(target: ServerPlayerEntity) {
         serverHeader {
             translatable("bv.player.not_found", Rich.colorize(target.gameProfile.name, Color.YELLOW))
         }
@@ -73,16 +82,20 @@ object NotificationService {
     fun newBan(banReason: String, manager: PlayerManager, gameProfile: GameProfile, address: SocketAddress) {
         manager.broadcastSystemMessage(buildText {
             ban {
-                color(Color.YELLOW) {
-                    literal(" ${gameProfile.name}")
-                }
-                literal(" baniu ")
-                tooltip({
-                    literal("um gringo safado")
-                }){
-                    literal("Motivo: $banReason\n")
-                    literal("IP: ${address.address}")
-                }
+                translatable("bv.autoban.other", buildText {
+                    color(Color.YELLOW) {
+                        literal(gameProfile.name)
+                    }
+                }, buildText {
+                    tooltip({
+                        lines(
+                            { translatable("bv.autoban.reason", buildText { literal(banReason) }) },
+                            { literal("IP: ${address.address}") }
+                        )
+                    }) {
+                        translatable("bv.autoban.moniker")
+                    }
+                })
             }
         }, false)
     }
@@ -90,16 +103,20 @@ object NotificationService {
     fun mergedBan(banReason: String, manager: PlayerManager, gameProfile: GameProfile, address: SocketAddress) {
         manager.broadcastSystemMessage(buildText {
             ban {
-                color(Color.YELLOW) {
-                    literal(" ${gameProfile.name}")
-                }
-                literal(" baniu ")
-                tooltip({
-                    literal("um gringo persistente")
-                }){
-                    literal("Motivo: $banReason\n")
-                    literal("IP: ${address.address}")
-                }
+                translatable("bv.autoban.other", buildText {
+                    color(Color.YELLOW) {
+                        literal(gameProfile.name)
+                    }
+                }, buildText {
+                    tooltip({
+                        lines(
+                            { translatable("bv.autoban.reason", buildText { literal(banReason) }) },
+                            { literal("IP: ${address.address}") }
+                        )
+                    }) {
+                        translatable("bv.autoban.moniker.persistent")
+                    }
+                })
             }
         }, false)
     }
