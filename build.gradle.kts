@@ -49,7 +49,6 @@ tasks {
 		exclude("com/google/gson/**")
 		exclude("org/slf4j/**")
 
-		configurations = listOf(transitiveInclude)
 		duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
 		// minimize()
@@ -76,6 +75,8 @@ dependencies {
 	*/
 
 	modImplementation(libs.quilt.loader)
+	// These should not be made.
+	modLocalRuntime(libs.quilt.loader)
 
 
 	// QSL is not a complete API; You will need Quilted Fabric API to fill in the gaps.
@@ -95,12 +96,13 @@ dependencies {
 
 	// For EntityPlayerMPFake
 	modImplementation(libs.carpet)
+	modRuntimeOnly(libs.carpet)
 
 
-	transInclude(libs.ktor.core)
-	transInclude(libs.ktor.cio)
-	transInclude(libs.ktor.contentnegotiation)
-	transInclude(libs.ktor.json)
+	shadowRuntimeOnly(libs.ktor.core)
+	shadowRuntimeOnly(libs.ktor.cio)
+	shadowRuntimeOnly(libs.ktor.contentnegotiation)
+	shadowRuntimeOnly(libs.ktor.json)
 
 }
 
