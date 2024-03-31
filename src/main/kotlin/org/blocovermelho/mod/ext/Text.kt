@@ -98,38 +98,58 @@ object Mimicry {
 
 object Commands {
     fun TextBuilder.login( action: TextBuilder.() -> Unit ) {
-        bracketed(innerColor = Colors.AUTH) {
-            literal("Login")
-        }
-        action()
+        lineOf(
+            {
+                bracketed(innerColor = Colors.AUTH) {
+                    literal("Login")
+                }
+            },
+            action
+        )
     }
 
     fun TextBuilder.registrar( action: TextBuilder.() -> Unit ) {
-        bracketed(innerColor = Colors.AUTH) {
-            literal("Registrar")
-        }
-        action()
+        lineOf(
+            {
+                bracketed(innerColor = Colors.AUTH) {
+                    literal("Registrar")
+                }
+            },
+            action
+        )
     }
 
     fun TextBuilder.mudarSenha( action: TextBuilder.() -> Unit ) {
-        bracketed(innerColor = Colors.AUTH) {
-            literal("Mudar Senha")
-        }
-        action()
+        lineOf(
+            {
+                bracketed(innerColor = Colors.AUTH) {
+                    literal("Mudar Senha")
+                }
+            },
+            action
+        )
     }
 
     fun TextBuilder.link( action: TextBuilder.() -> Unit ) {
-        bracketed(innerColor = Colors.LINK) {
-            literal("Link")
-        }
-        action()
+        lineOf(
+            {
+                bracketed(innerColor = Colors.LINK) {
+                    literal("Link")
+                }
+            },
+            action
+        )
     }
 
     fun TextBuilder.ban(action: TextBuilder.() -> Unit) {
-        bracketed (innerColor = Colors.ADMIN, open = "<", close = ">") {
-            literal("Banimento")
-        }
-        action()
+        lineOf(
+            {
+                bracketed (innerColor = Colors.ADMIN, open = "<", close = ">") {
+                    literal("Banimento")
+                }
+            },
+            action
+        )
     }
 }
 
