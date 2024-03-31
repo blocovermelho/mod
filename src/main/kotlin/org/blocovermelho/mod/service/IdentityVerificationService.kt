@@ -19,7 +19,7 @@ object IdentityVerificationService {
 
             if (spe != null && spe.isBypassing()) {
                 val nonce = BVQuilt.Store.BypassCidrCheck[spe.uuid];
-                if (nonce != null) {
+                if (!nonce.isNullOrEmpty()) {
                     val response = Routes.Auth.CIDR.Allow(spe.uuid, spe.ip, nonce).handleErr { err -> spe.sendErr(err, "Verificando sua identidade") } ?: return@consumeEach
                     if (response) {
                         BVQuilt.Store.BypassCidrCheck.remove(it.uuid)
