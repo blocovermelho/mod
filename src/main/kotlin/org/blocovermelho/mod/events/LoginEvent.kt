@@ -28,7 +28,7 @@ suspend fun checkSession(player: ServerPlayerEntity)  {
     val session = Routes.Auth.Session(player.uuid, player.ip).handleErr { player.sendErr(it, "verificando se possui uma sessão ativa") } ?: return
 
     if (session) {
-        Routes.Auth.Resume(player.uuid).handleErr { player.sendErr(it, "atualizando dados da sua conta") }
+        Routes.Auth.Resume(player.uuid, player.ip).handleErr { player.sendErr(it, "atualizando dados da sua conta") }
         BVQuilt.Store.LoggedPlayers.add(player.uuid)
         player.sendSystemMessage(buildText {
             login {

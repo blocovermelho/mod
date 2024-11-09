@@ -7,7 +7,6 @@ import org.blocovermelho.mod.api.handleErr
 import org.blocovermelho.mod.ext.Commands.link
 import org.blocovermelho.mod.ext.Helpers.clipboard
 import org.blocovermelho.mod.ext.Helpers.maskedUri
-import org.blocovermelho.mod.ext.isBypassing
 import org.blocovermelho.mod.ext.isLogged
 import org.blocovermelho.mod.ext.launch
 import org.blocovermelho.mod.ext.sendError
@@ -22,7 +21,7 @@ import org.quiltmc.qkl.library.text.literal
 object LinkCommand {
     fun register(dispatcher: CommandDispatcher<ServerCommandSource>) {
         dispatcher.register("link") {
-            requires { it.isPlayer && !it.player!!.isLogged() && !it.player!!.isBypassing() }
+            requires { it.isPlayer && !it.player!!.isLogged() }
             launch {
                 val player = this.player!!;
 

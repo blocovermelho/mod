@@ -15,21 +15,21 @@ object Routes {
         suspend fun ChangePassword(changePassword: ChangePassword): HttpResult<Boolean> =
             BVClient.Patch(BASE_PATH + "/changepw", changePassword)
 
-        suspend fun Resume(playerUUID: UUID): HttpResult<Boolean> =
-            BVClient.Patch<Boolean, Any>(BASE_PATH + "/$playerUUID/resume")
+        suspend fun Resume(userUUID: UUID, userIP: String): HttpResult<Boolean> =
+            BVClient.Patch<Boolean, Any>(BASE_PATH + "/resume?uuid=$userUUID&ip=$userIP")
 
-        suspend fun Login(serverUUID: UUID, loginRequest: LoginRequest): HttpResult<Boolean> =
+        suspend fun Login(serverUUID: UUID, loginRequest: LoginRequest): HttpResult<ServerJoin?> =
             BVClient.Post(BASE_PATH + "/$serverUUID/login", loginRequest)
 
-        suspend fun Logoff(serverUUID: UUID, userUUID: UUID, userIP: String, pos: Pos): HttpResult<Boolean> =
+        suspend fun Logoff(serverUUID: UUID, userUUID: UUID, userIP: String, pos: Viewport): HttpResult<Boolean> =
             BVClient.Post(BASE_PATH + "/$serverUUID/logoff?uuid=$userUUID&ip=$userIP", pos)
 
         suspend fun Session(userUUID: UUID, userIP: String): HttpResult<Boolean> =
             BVClient.Get(BASE_PATH + "/session?uuid=$userUUID&ip=$userIP")
 
         object CIDR {
-            suspend fun Check(userUUID: UUID, userIP: String): HttpResult<Cidr.Response> =
-                BVClient.Get(BASE_PATH + "/cidr?uuid=$userUUID&ip=$userIP")
+            suspend fun Check(userUUID: UUID, serverUUID: UUID, userIP: String): HttpResult<Cidr.Response> =
+                BVClient.Get(BASE_PATH + "/cidr?uuid=$userUUID&ip=$userIP&server=$serverUUID")
             suspend fun Allow(userUUID: UUID, userIP: String, nonce: String): HttpResult<Boolean>  =
                 BVClient.Post<Boolean, Any>(BASE_PATH + "/allow?uuid=$userUUID&nonce=$nonce&ip=$userIP")
 

@@ -1,5 +1,6 @@
 package org.blocovermelho.mod.api.models
 
+import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.blocovermelho.mod.DurationSerializer
@@ -14,17 +15,20 @@ data class User(
     val username: String,
     @SerialName("discord_id")
     val discordId: String,
-    val pronouns: List<String>,
+    @SerialName("created_at")
+    val createdAt: Instant,
+    val pronouns: List<Pronoun>,
     @SerialName("last_server")
-    @Serializable(with = UUIDSerializer::class) val lastServer: UUID?,
-    @SerialName("last_pos")
-    val lastPos: Map<@Serializable(with = UUIDSerializer::class) UUID, Pos>,
-    val playtime: Map<@Serializable(with = UUIDSerializer::class) UUID, @Serializable(with = DurationSerializer::class) Duration>
+    @Serializable(with = UUIDSerializer::class) val lastServer: UUID?
 )
+
+@Serializable
+data class Pronoun (val pronoun: String, val color: String)
 
 @Serializable
 data class CreateUser(
     @Serializable(with = UUIDSerializer::class) val uuid: UUID,
     val username: String,
+    @SerialName("discord_id")
     val discordId: String
 )

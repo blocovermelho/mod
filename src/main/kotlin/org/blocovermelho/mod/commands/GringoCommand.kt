@@ -5,7 +5,7 @@ import net.minecraft.server.command.ServerCommandSource
 import org.blocovermelho.mod.BVQuilt
 import org.blocovermelho.mod.ext.Colors
 import org.blocovermelho.mod.ext.Commands.ban
-import org.blocovermelho.mod.ext.isBypassing
+import org.blocovermelho.mod.ext.isKnown
 import org.blocovermelho.mod.ext.isLogged
 import org.quiltmc.qkl.library.brigadier.argument.*
 import org.quiltmc.qkl.library.brigadier.execute
@@ -20,7 +20,7 @@ import org.quiltmc.qkl.library.text.literal
 object GringoCommand {
     fun register(dispatcher: CommandDispatcher<ServerCommandSource>) {
         dispatcher.register("gringo") {
-            requires { it.isPlayer && it.player!!.isLogged() && !it.player!!.isBypassing() }
+            requires { it.isPlayer && it.player!!.isLogged() && it.player!!.isKnown() }
 
             required(literal("add")) {
                 required(greedyString("mensagem")) { msg ->

@@ -6,7 +6,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.blocovermelho.mod.BVQuilt.Store.BanReasons
 import org.blocovermelho.mod.api.BVClient
-import org.blocovermelho.mod.api.models.User
+import org.blocovermelho.mod.api.models.*
 import org.blocovermelho.mod.api.ws.SocketEvent
 import org.blocovermelho.mod.api.ws.messages.LinkResponse
 import org.blocovermelho.mod.api.ws.messages.LinkResult
@@ -37,12 +37,16 @@ object BVQuilt : ModInitializer {
         registerCommands()
         Store.read()
         LOGGER.info("Hello Quilt world from {}!", mod.metadata()?.name())
+
+        val str = Json.decodeFromString<ServerJoin?>("{\"Resume\":{\"loc\":{\"dim\":\"minecraft:overworld\",\"x\":209.9735469368637,\"y\":-60.0,\"z\":-231.2604255853168},\"yaw\":51.899131774902344,\"pitch\":-2.9999828338623047}}")
+
+        LOGGER.info(str.toString())
     }
 
     object Store {
         val LoggedPlayers : MutableSet<UUID> = mutableSetOf()
         var ServerUUID : UUID = UUID.fromString(SERVER_DATA.id.value())
-        var BypassCidrCheck: MutableMap<UUID, String> = mutableMapOf()
+        var UnknownIp: MutableSet<UUID> = mutableSetOf()
         var BanReasons: MutableSet<String> = mutableSetOf();
 
         object Channels {

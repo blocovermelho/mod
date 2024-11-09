@@ -11,8 +11,6 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import org.blocovermelho.mod.BVQuilt
 import org.blocovermelho.mod.api.BVClient
-import org.blocovermelho.mod.api.ws.handlers.cidr.handleCidrSyn
-import org.blocovermelho.mod.api.ws.handlers.cidr.handleCidrSynAwk
 import org.blocovermelho.mod.api.ws.handlers.handleLinkResponse
 
 object Routes {
@@ -42,9 +40,6 @@ object Routes {
                 BVQuilt.LOGGER.info("[Websocket-Read-Thread] Could Serialize: ${serialized != null}")
 
                 when(serialized) {
-                    is SocketEvent.CIDR_SYN -> handleCidrSyn(serialized)
-                    is SocketEvent.CIDR_SYN_AWK -> handleCidrSynAwk(serialized)
-                    is SocketEvent.ERROR -> {}
                     is SocketEvent.LINK_RESPONSE -> handleLinkResponse(serialized)
                     else -> {
                         BVQuilt.LOGGER.info("[Websocket-Read-Thread] Unknown message received.")

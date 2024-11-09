@@ -78,7 +78,6 @@ dependencies {
 	// These should not be made.
 	modLocalRuntime(libs.quilt.loader)
 
-
 	// QSL is not a complete API; You will need Quilted Fabric API to fill in the gaps.
 	// Quilted Fabric API will automatically pull in the correct QSL version.
 	modImplementation(libs.qfapi)
@@ -153,6 +152,10 @@ tasks {
 			rename { "LICENSE_${archives_base_name}" }
 		}
 	}
+}
+
+project.configurations.configureEach {
+	exclude("net.fabricmc.fabric-api")
 }
 
 fun DependencyHandler.shadowRuntimeOnly(dependency: Any) {

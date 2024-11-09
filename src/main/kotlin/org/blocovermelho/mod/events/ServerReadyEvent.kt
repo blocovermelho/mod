@@ -8,7 +8,7 @@ import org.blocovermelho.mod.api.models.Modpack
 import java.util.*
 
 suspend fun createNewServer() {
-    val uuid = UUID.fromString(BVQuilt.SERVER_DATA.id.value())
+    var uuid = UUID.fromString(BVQuilt.SERVER_DATA.id.value())
 
     if (uuid == UUID(0L, 0L)) {
         val pack = Modpack(
@@ -26,5 +26,8 @@ suspend fun createNewServer() {
 
         BVQuilt.SERVER_DATA.id.setValue(s.uuid.toString(), true)
         BVQuilt.Store.ServerUUID = s.uuid
+        uuid = s.uuid
     }
+
+    Routes.Server.Enable(uuid)
 }
