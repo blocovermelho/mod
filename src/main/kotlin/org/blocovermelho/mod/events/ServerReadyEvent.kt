@@ -29,5 +29,5 @@ suspend fun createNewServer() {
         uuid = s.uuid
     }
 
-//    Routes.Server.Enable(uuid)
+    Routes.Server.Enable(uuid)
 }

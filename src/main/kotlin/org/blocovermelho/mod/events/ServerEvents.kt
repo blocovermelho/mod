@@ -32,9 +32,9 @@ fun onServerReady(){
             }
         }
 
-//        onServerStopping {
-//            launch { disableServer() }
-//        }
+        onServerStopping {
+            launch { disableServer() }
+        }
     }
 }
 
