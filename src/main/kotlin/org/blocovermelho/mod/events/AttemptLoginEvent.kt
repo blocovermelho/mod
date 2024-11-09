@@ -40,15 +40,10 @@ suspend fun onLoginAttempt(server: MinecraftServer, address: SocketAddress, prof
         return buildText { banMessage(banReason, profile.name) }
     }
 
-    val user = Routes.User.Exists(profile.id).handleErr {  } ?: return Text.of("Internal API Error");
+    val user = Routes.Auth.Exists(profile.id).handleErr {  } ?: return Text.of("Internal API Error");
 
     if (!user) {
-        BVQuilt.LOGGER.info("[PreLoginEvent] User for ${profile.id} not found")
-        return null
-    }
-
-    if (BVQuilt.Store.BypassCidrCheck.contains(profile.id)) {
-        BVQuilt.LOGGER.info("[PreLoginEvent] ${profile.id} is bypassing the CIDR check")
+        BVQuilt.LOGGER.info("[PreLoginEvent] Account for ${profile.id} not found")
         return null
     }
 
@@ -69,16 +64,16 @@ suspend fun onLoginAttempt(server: MinecraftServer, address: SocketAddress, prof
         }
     }
 
-    val check = Routes.Auth.CIDR.Check(profile.id, address.address).handleErr {  } ?: return Text.of("Internal API Error");
+    val serverUuid = UUID.fromString(BVQuilt.SERVER_DATA.id.value());
+    val check = Routes.Auth.CIDR.Check(profile.id, serverUuid, address.address).handleErr {  } ?: return Text.of("Internal API Error");
 
     text = when (check) {
         Cidr.Response.Allowed -> null
         Cidr.Response.Banned -> buildText {
             banMessage(banReason, profile.name)
         }
-        Cidr.Response.Unknown ->  {
-            Routes.Auth.CIDR.Ban(profile.id, address.address).handleErr {  };
-            return buildText { newIdentity() }
+        Cidr.Response.Unknown -> buildText {
+            newIdentity()
         }
     }
 

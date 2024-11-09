@@ -8,8 +8,8 @@ fun ServerPlayerEntity.isLogged() : Boolean {
     return BVQuilt.Store.LoggedPlayers.contains(this.uuid)
 }
 
-fun ServerPlayerEntity.isBypassing() : Boolean {
-    return BVQuilt.Store.BypassCidrCheck.contains(this.uuid)
+fun ServerPlayerEntity.isKnown() : Boolean {
+    return !BVQuilt.Store.UnknownIp.contains(this.uuid)
 }
 
 fun ServerPlayerEntity.isCarpetBot() : Boolean {

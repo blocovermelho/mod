@@ -4,7 +4,8 @@ import net.minecraft.server.network.ServerPlayerEntity
 import org.blocovermelho.mod.BVQuilt
 import org.blocovermelho.mod.api.Routes
 import org.blocovermelho.mod.api.handleErr
-import org.blocovermelho.mod.api.models.Pos
+import org.blocovermelho.mod.api.models.Loc
+import org.blocovermelho.mod.api.models.Viewport
 
 suspend fun handleDisconnect(player: ServerPlayerEntity) {
     val removed = BVQuilt.Store.LoggedPlayers.remove(player.uuid)
@@ -19,11 +20,12 @@ suspend fun handleDisconnect(player: ServerPlayerEntity) {
     }
 
     Routes.Auth.Logoff(
-        BVQuilt.Store.ServerUUID, player.uuid, player.ip, Pos(
-            player.blockX,
-            player.blockZ,
-            player.blockY,
+        BVQuilt.Store.ServerUUID, player.uuid, player.ip, Viewport(Loc(
+            player.x,
+            player.y,
+            player.z,
             player.world.dimensionKey.value.toString()
+        ), player.yaw.toDouble(), player.pitch.toDouble()
         )
     )
 }

@@ -23,7 +23,7 @@ import org.quiltmc.qkl.library.text.*
 object RegisterCommand {
     fun register(dispatcher: CommandDispatcher<ServerCommandSource>) {
         dispatcher.register("registrar") {
-            requires { it.isPlayer && !it.player!!.isLogged() && !it.player!!.isBypassing() }
+            requires { it.isPlayer && !it.player!!.isLogged() }
             required(word("senha")) { senha ->
                 required(word("repetirSenha")) { repetirSenha ->
                     launch {
@@ -73,7 +73,7 @@ object RegisterCommand {
                             ?: return@launch
 
 
-                        Routes.Auth.Resume(player.uuid).handleErr { sendError(it, "atualizando dados da sua conta") }
+                        Routes.Auth.Resume(player.uuid, player.ip).handleErr { sendError(it, "atualizando dados da sua conta") }
 
                         BVQuilt.Store.LoggedPlayers.add(player.uuid)
                         player.changeGameMode(BVQuilt.SERVER_DATA.postLoginGamemode.value())

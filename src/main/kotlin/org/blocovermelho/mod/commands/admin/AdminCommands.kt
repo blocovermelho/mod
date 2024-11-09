@@ -12,7 +12,6 @@ object AdminCommands {
             //Replace OP Check for luckperms api check.
             requires { it.isPlayer && it.player!!.hasPermissionLevel(2) && it.player!!.isLogged() }
             revokeCommand()
-            unlock()
         }
     }
 }
