@@ -14,8 +14,6 @@ suspend inline fun <reified T> m_run(request: (() -> HttpResponse)): HTTPReply<T
     val response = request()
     val code = response.status
 
-    BvAuthMod.Logger.warn("Request: ${response.request.url} | Got: ${response.bodyAsText()}")
-
     val result: HTTPReply<T> = if (!code.isSuccess()) {
         Err(Pair(code, response.bodyAsText()))
     } else {
