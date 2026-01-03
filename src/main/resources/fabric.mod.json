@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bv-auth-mod",
+  "version": "${version}",
+  "name": "bv-auth-mod",
+  "description": "Authentication System for Bloco Vermelho",
+  "authors": [],
+  "contact": {},
+  "license": "GPL-3.0",
+  "icon": "assets/bv-auth-mod/icon.png",
+  "environment": "server",
+  "entrypoints": {
+    "main": [
+      "org.blocovermelho.bvauth.BvAuthMod"
+    ]
+  },
+  "accessWidener": "bv-auth.classtweaker",
+  "mixins": [
+    "bv-auth-mod.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-language-kotlin": ">=${kotlin_loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}

@@ -1,0 +1,18 @@
+classTweaker v1 named
+
+# Time to hope the class tweaker isn't tweaking and actually work.
+# This is the simplest thing it can do, and it should do well. No interface injection.
+# A simple stripping of field flags.
+
+### Lets change the UUID of an player at *runtime*, surely that wont cause any problems ###
+### Problems:
+
+# Allows modifying the gameProfile of a player
+accessible field net/minecraft/world/entity/player/Player gameProfile Lcom/mojang/authlib/GameProfile;
+mutable field net/minecraft/world/entity/player/Player gameProfile Lcom/mojang/authlib/GameProfile;
+
+# Allows editing the known uuids
+accessible field net/minecraft/server/level/ServerLevel entityManager Lnet/minecraft/world/level/entity/PersistentEntitySectionManager;
+accessible field net/minecraft/world/level/entity/PersistentEntitySectionManager knownUuids Ljava/util/Set;
+accessible field net/minecraft/world/level/entity/PersistentEntitySectionManager visibleEntityStorage Lnet/minecraft/world/level/entity/EntityLookup;
+accessible field net/minecraft/world/level/entity/EntityLookup byUuid Ljava/util/Map;
