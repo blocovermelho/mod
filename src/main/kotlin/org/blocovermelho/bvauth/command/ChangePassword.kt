@@ -9,9 +9,10 @@ import org.blocovermelho.bvauth.BvAuthMod
 import org.blocovermelho.bvauth.api.routes.rProfile
 import org.blocovermelho.bvauth.api.types.PasswordUpdate
 import org.blocovermelho.bvauth.ext.Colors
+import org.blocovermelho.bvauth.ext.Core.colorize
+import org.blocovermelho.bvauth.ext.Core.toLiteral
 import org.blocovermelho.bvauth.ext.Headers
-import org.blocovermelho.bvauth.ext.STFBuilder.asComponent
-import org.blocovermelho.bvauth.ext.STFBuilder.color
+import org.blocovermelho.bvauth.ext.dsl.*
 import org.blocovermelho.bvauth.ext.message
 import org.blocovermelho.bvauth.impl.CoroutineManager
 import org.blocovermelho.bvauth.impl.Err
@@ -35,25 +36,24 @@ object ChangePassword {
                             when (val result = rProfile.PasswordChange(profile.username, antiga, nova)) {
                                 is Ok -> {
                                     val text = when (result.value) {
-                                        PasswordUpdate.InvalidPassword -> "Senha incorreta.".color(Colors.ERR) + " Verifique se a senha antiga bate com a que você logou."
-                                        PasswordUpdate.InvalidPlayerState -> "Estado do jogador inválido."
-                                        PasswordUpdate.PasswordChanged -> "Senha alterada.".color(Colors.COMMAND_GREEN)
-                                        PasswordUpdate.ProfileNotInServer -> "Perfil não presente no servidor."
-                                        PasswordUpdate.ServerOffline -> "Servidor offline."
+                                        PasswordUpdate.InvalidPassword -> buildLine {
+                                            this += "Senha incorreta.".colorize(Colors.ERR)
+                                            this += " Verifique se a senha antiga bate com a que você logou."
+                                        }
+                                        PasswordUpdate.InvalidPlayerState -> "Estado do jogador inválido.".toLiteral()
+                                        PasswordUpdate.PasswordChanged -> "Senha alterada.".colorize(Colors.COMMAND_GREEN)
+                                        PasswordUpdate.ProfileNotInServer -> "Perfil não presente no servidor.".toLiteral()
+                                        PasswordUpdate.ServerOffline -> "Servidor offline.".toLiteral()
                                     }
 
                                     player.sendSystemMessage(
-                                        listOf(
-                                            Headers.Server, Headers.ChangePw, text
-                                        ).joinToString(" ").asComponent()
+                                        buildLine(Headers.Server, Headers.ChangePw, text)
                                     )
                                 }
 
                                 is Err -> {
                                     player.sendSystemMessage(
-                                        listOf(
-                                            Headers.Server, Headers.ChangePw, result.message("a mudança da sua senha.")
-                                        ).joinToString(" ").asComponent()
+                                        buildLine(Headers.Server, Headers.ChangePw, result.message("a mudança da sua senha."))
                                     )
                                 }
                             }

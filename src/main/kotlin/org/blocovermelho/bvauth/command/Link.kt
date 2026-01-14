@@ -3,23 +3,21 @@ package org.blocovermelho.bvauth.command
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.StringArgumentType
 import kotlinx.coroutines.launch
-import net.minecraft.commands.CommandBuildContext
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 import org.blocovermelho.bvauth.BvAuthMod
 import org.blocovermelho.bvauth.api.routes.Discord
-import org.blocovermelho.bvauth.ext.Colors
+import org.blocovermelho.bvauth.ext.Core.maskedUri
 import org.blocovermelho.bvauth.ext.Headers
-import org.blocovermelho.bvauth.ext.STFBuilder.asComponent
-import org.blocovermelho.bvauth.ext.STFBuilder.color
-import org.blocovermelho.bvauth.ext.STFBuilder.maskedUrl
-import org.blocovermelho.bvauth.ext.STFBuilder.showText
-import org.blocovermelho.bvauth.ext.STFBuilder.suggestCommand
+import org.blocovermelho.bvauth.ext.dsl.buildLine
+import org.blocovermelho.bvauth.ext.dsl.lineBreak
+import org.blocovermelho.bvauth.ext.dsl.plusAssign
 import org.blocovermelho.bvauth.ext.message
 import org.blocovermelho.bvauth.ext.username
 import org.blocovermelho.bvauth.impl.CoroutineManager
 import org.blocovermelho.bvauth.impl.Err
 import org.blocovermelho.bvauth.impl.Ok
+import java.net.URI
 
 object Link {
     fun register(
@@ -32,22 +30,22 @@ object Link {
             CoroutineManager.scope.launch {
                 if (profile != null) {
                     player.sendSystemMessage(
-                        listOf(
-                            listOf(
-                                Headers.Server, Headers.Link,
-                                "A conta já está linkada no perfil: ${profile.username} Discord=(${profile.discordId})").joinToString(" "),
-                            "Caso considere isto um engano ou queira mudar de conta do discord, entre em contato com a staff."
-                        ).joinToString ( "\n" ).asComponent()
+                        buildLine {
+                            this += buildLine( Headers.Server, Headers.Link)
+                            this += "A conta já está linkada no perfil: ${profile.username} Discord=(${profile.discordId})"
+                            lineBreak()
+                            this += "Caso considere isto um engano ou queira mudar de conta do discord, entre em contato com a staff."
+                        }
                     )
                 } else {
                     val newLink = Discord.GetNewLink(player.gameProfile.name)
                     player.sendSystemMessage(
-                        listOf(
-                            Headers.Server, Headers.Link,
-                            "Link Automático",
-                            newLink.maskedUrl("Clique Aqui"),
-                            "para abrir um navegador e linkar sua conta do discord."
-                        ).joinToString(  " " ).asComponent())
+                        buildLine {
+                            this += listOf(Headers.Server, Headers.Link)
+                            this += "Link Automático"
+                            this += { maskedUri(URI.create(newLink.replace("\"", "")), "Clique Aqui") }
+                            this += "para abrir um navegador e linkar sua conta do discord."
+                        })
                 }
             }
             1
@@ -58,13 +56,12 @@ object Link {
 
             if (profile != null) {
                 player.sendSystemMessage(
-                    listOf(
-                        listOf(
-                            Headers.Server, Headers.Link ,
-                            "A conta já está linkada no perfil: ${profile.username} Discord=(${profile.discordId})").joinToString(" "),
-                        "Caso considere isto um engano ou queira mudar de conta do discord, entre em contato com a staff."
-                    ).joinToString ("\n" ).asComponent()
-                )
+                    buildLine {
+                        this += listOf( Headers.Server, Headers.Link)
+                        this += "A conta já está linkada no perfil: ${profile.username} Discord=(${profile.discordId})"
+                        lineBreak()
+                        this += "Caso considere isto um engano ou queira mudar de conta do discord, entre em contato com a staff."
+                    })
                 return@executes 1
             }
 
@@ -78,11 +75,11 @@ object Link {
                    }
                    is Err -> {
                        player.sendSystemMessage(
-                           listOf(
+                           buildLine(
                                Headers.Server,
                                Headers.Register,
                                link.message("a obtenção da sua conta do discord.", "Tente novamente com outro token."),
-                           ).joinToString(" ").asComponent()
+                           )
                        )
                    }
                 }

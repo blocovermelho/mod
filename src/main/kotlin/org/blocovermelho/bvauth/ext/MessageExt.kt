@@ -1,171 +1,230 @@
 package org.blocovermelho.bvauth.ext
 
 
-import eu.pb4.placeholders.api.parsers.TagParser
 import io.ktor.http.HttpStatusCode
-import net.minecraft.ChatFormatting
+import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
-import net.minecraft.network.chat.TextColor
-import net.minecraft.server.level.ServerPlayer
+import net.minecraft.network.chat.HoverEvent
 import org.blocovermelho.bvauth.BvAuthMod
 import org.blocovermelho.bvauth.api.types.WebSocketMessage
-import org.blocovermelho.bvauth.ext.STFBuilder.asComponent
-import org.blocovermelho.bvauth.ext.STFBuilder.bracketed
-import org.blocovermelho.bvauth.ext.STFBuilder.color
-import org.blocovermelho.bvauth.ext.STFBuilder.showText
-import org.blocovermelho.bvauth.ext.STFBuilder.suggestCommand
+import org.blocovermelho.bvauth.ext.Core.bracketed
+import org.blocovermelho.bvauth.ext.Core.colorize
+import org.blocovermelho.bvauth.ext.Core.suggestCmd
+import org.blocovermelho.bvauth.ext.dsl.*
 import org.blocovermelho.bvauth.impl.Err
-import org.blocovermelho.bvauth.impl.HTTPReply
+import java.net.URI
 
 object Colors {
-    val READ_ONLY_RED = TextColor.fromRgb(0xF2706F)
-    val COMMAND_GREEN = TextColor.fromRgb(0x4BF27B)
-    val LINK = TextColor.fromRgb(0x5865F2)
-    val INFO = TextColor.fromRgb(0xA72DDB)
-    val AUTH = TextColor.fromRgb(0xD9902E)
-    var ERR = TextColor.fromRgb(0xFF0000)
-    val ADMIN = TextColor.fromRgb(0x7D21Bf)
+    val READ_ONLY_RED = Color(0xF2706F)
+    val COMMAND_GREEN = Color(0x4BF27B)
+    val LINK = Color(0x5865F2)
+    val INFO = Color(0xA72DDB)
+    val AUTH = Color(0xD9902E)
+    var ERR = Color(0xFF0000)
+    val ADMIN = Color(0x7D21Bf)
 }
 
 object Headers {
-    val Server: String
+    val Server: Component
         get() = if (BvAuthMod.Config.Server.Nome.isBlank()) {
-            "Bloco Vermelho".color(Colors.READ_ONLY_RED).bracketed()
+            buildComponent {
+                bracketed {
+                    color(Colors.READ_ONLY_RED) {
+                        literal("Bloco Vermelho")
+                    }
+                }
+            }
         } else {
-            BvAuthMod.Config.Server.Nome.color(Colors.READ_ONLY_RED).bracketed()
+            buildComponent {
+                bracketed {
+                    color(Colors.READ_ONLY_RED) {
+                        literal(BvAuthMod.Config.Server.Nome)
+                    }
+                }
+            }
         }
 
 
-    val Login = "Login".color(Colors.AUTH)
-    val Register = "Registrar".color(Colors.AUTH)
-    val ChangePw = "Mudar Senha".color(Colors.AUTH)
+    val Login = "Login".colorize(Colors.AUTH)
+    val Register = "Registrar".colorize(Colors.AUTH)
+    val ChangePw = "Mudar Senha".colorize(Colors.AUTH)
 
-    val Link = "Link".color(Colors.LINK)
+    val Link = "Link".colorize(Colors.LINK)
 }
 
-fun <T> Err<T, Pair<HttpStatusCode,String>>.message (_when: String, extra: String = "") : String {
-    return listOf("Um erro aconteceu durante",_when.color(ChatFormatting.YELLOW), "$extra\n", this.error.second.color(ChatFormatting.GRAY)).joinToString (" ")
+object Components {
+    fun suggestCommand(command: String): Component =
+        buildComponent { suggestCmd("/registrar") { literal("/registrar") } }
+}
+
+fun <T> Err<T, Pair<HttpStatusCode,String>>.message (_when: String, extra: String = "") : Component
+= buildLine {
+    this += "Um erro aconteceu durante"
+    this += _when.colorize(Color.YELLOW)
+    lineBreak()
+    this += this@message.error.second.colorize(Color.GREY)
 }
 
 
-fun WebSocketMessage.DiscordLink.message(): Component {
-    if (!this.isMember) {
-        val user = this.username
-        return listOf(
-            Headers.Server,
-            Headers.Link,
-            "A conta do discord @${this.discordHandle} não está no discord.",
-            "Verifique se esta é a conta correta e tente novamente."
-        ).joinToString(" ").asComponent()
+
+fun WebSocketMessage.DiscordLink.message(): Component = buildLine {
+    this += listOf(Headers.Server,Headers.Link)
+
+    if (!this@message.isMember) {
+        this += "A conta do discord @${this@message.discordHandle} não está no discord."
+        this += "Verifique se esta é a conta correta e tente novamente."
     } else {
-        val user = (this.extras?.nickname ?: this.discordHandle).color(
-            this.extras?.roleColor ?: "#FFFFF"
-        ) + " " + "(${this.extras?.roleName ?: "@everyone"})"
+        val roleColor = this@message.extras?.roleColor?.let { Color.from(it) }
+        val displayName = this@message.extras?.nickname ?: this@message.discordHandle
+        val user = buildLine {
+            this += displayName.colorize(roleColor)
+            this += { bracketed (open = "(", close = ")") {  literal(this@message.extras?.roleName ?: "@everyone") } }
+        }
 
-        return listOf(
-            listOf(Headers.Server, Headers.Link, "Olá $user.").joinToString(" "), listOf(
-                "Use o comando",
-                "/registrar".suggestCommand("/registrar").color(Colors.COMMAND_GREEN)
-                    .showText("Clique para colocar o comando no seu chat."),
-                "para criar seu perfil."
-            ).joinToString(" ")
-        ).joinToString("\n").asComponent()
+        wrap("Olá", user, ".")
+        lineBreak()
+        wrap("Use o comando",  Components.suggestCommand("/registrar"), "para criar o seu perfil.")
     }
 }
 
-object STFBuilder {
-
-    fun String.asUrl(): String {
-        return this.color(Colors.LINK).underlined().openUrl(this)
+object Core {
+    private fun TextBuilder.intersperse(separator: TextBuilder.() -> Unit, vararg actions: TextBuilder.() -> Unit) {
+        actions.forEachIndexed { idx, it ->
+            it()
+            if (idx != actions.lastIndex) {
+                separator()
+            }
+        }
     }
 
-    fun String.maskedUrl(mask: String): String {
-        return mask.color(Colors.LINK).underlined().openUrl(this)
+    fun TextBuilder.array(data: List<String>, action: TextBuilder.(String) -> Unit) {
+        data.forEachIndexed { idx, it ->
+            action(it)
+            if (idx != data.lastIndex) {
+                literal(", ")
+            }
+        }
     }
 
-    fun String.bracketed(
-        start: String = "[",
-        end: String = "]",
-        color: TextColor = TextColor.fromRgb(0xFFFFFF)
-    ): String {
-        return "[".color(color) + this + "]".color(color)
+    fun String.colorize(color: Color?) : Component = buildComponent {
+        color(color) {
+            literal(this@colorize)
+        }
     }
 
-    fun String.color(color: String) : String {
-        return "<c $color>$this</c>"
+    fun String.toLiteral() : Component = buildComponent {
+        literal(this@toLiteral)
     }
 
-    fun String.color(color: TextColor): String {
-        return "<c ${color.formatValue()}>$this</c>"
+    fun TextBuilder.bracketed(
+        bracketColor: Color = Color.GREY,
+        innerColor: Color = Color.WHITE,
+        open: String = "[",
+        close: String = "]",
+        action: TextBuilder.() -> Unit
+    ) {
+        color(bracketColor) {
+            literal(open)
+            color(innerColor) {
+                action()
+            }
+            literal(close)
+        }
     }
 
-    fun String.color(color: ChatFormatting): String {
-        return "<c ${TextColor.fromLegacyFormat(color)?.formatValue()}>$this</c>"
+    fun TextBuilder.err(action: TextBuilder.() -> Unit) {
+        bold {
+            bracketed(innerColor = Colors.ERR) {
+                literal("Erro")
+            }
+            action()
+        }
     }
 
-    fun String.bold(): String {
-        return "<b>$this</b>"
+    fun TextBuilder.tooltip(tooltipText: TextBuilder.() -> Unit, action: TextBuilder.() -> Unit) {
+        hoverEvent(HoverEvent.ShowText(buildComponent(tooltipText)), action)
     }
 
-    fun String.italic(): String {
-        return "<i>$this</i>"
+    fun TextBuilder.suggestCmd(value: String, action: TextBuilder.() -> Unit) {
+        clickEvent(ClickEvent.SuggestCommand(value), action)
     }
 
-    fun String.underlined(): String {
-        return "<underlined>$this</underlined>"
+    fun TextBuilder.copy(value: String, action: TextBuilder.() -> Unit) {
+        clickEvent(ClickEvent.CopyToClipboard(value), action)
     }
 
-
-    fun String.obfuscated(): String {
-        return "<obf>$this</obf>"
+    fun TextBuilder.openUri(value: URI, action: TextBuilder.() -> Unit) {
+        clickEvent(ClickEvent.OpenUrl(value), action)
     }
 
-
-    fun String.strikethrough(): String {
-        return "<st>$this</st>"
+    fun TextBuilder.maskedUri(uri: URI, mask: String) {
+        tooltip({ uriHint(uri.toString()) }) {
+            openUri(uri) {
+                color(Color.BLUE) {
+                    underlined {
+                        literal(mask)
+                    }
+                }
+            }
+        }
     }
 
-    fun String.openUrl(url: String): String {
-        return "<url '$url'>$this</url>"
+    fun TextBuilder.uri(uri: URI) = maskedUri(uri, uri.toString())
+
+    fun TextBuilder.command(command: String) {
+        color(Colors.COMMAND_GREEN) {
+            tooltip({ suggestHint(command) }) {
+                suggestCmd(command) {
+                    literal(command)
+                }
+            }
+        }
     }
 
-    fun String.runCommand(command: String): String {
-        return "<run_cmd '$command'>$this</run_cmd>"
+    fun TextBuilder.translatableClipboard(data: String, translate: String) {
+        bracketed(open = ">", close = "<", innerColor = Color.YELLOW, bracketColor = Colors.COMMAND_GREEN) {
+            tooltip({ copyHint(data) }) {
+                copy(data) {
+                    translatable(translate)
+                }
+            }
+        }
     }
 
-    fun String.suggestCommand(command: String): String {
-        return "<cmd '$command'>$this</cmd>"
+    fun TextBuilder.maskedClipboard(data: String, mask: String) {
+        bracketed(open = ">", close = "<", innerColor = Color.YELLOW, bracketColor = Colors.COMMAND_GREEN) {
+            tooltip({ copyHint(data) }) {
+                copy(data) {
+                    literal(mask)
+                }
+            }
+        }
     }
 
-    fun String.copyToClipboard(text: String): String {
-        return "<copy '$text'>$this</copy>"
+    fun TextBuilder.clipboard(data: String) = maskedClipboard(data, data)
+
+    fun TextBuilder.copyHint(data: String) {
+        hint("Clique para copiar", data, "para sua área de transferência")
     }
 
-    fun String.showText(text: String): String {
-        return "<hover '$text'>$this</hover>"
+    fun TextBuilder.suggestHint(data: String) {
+        hint("Clique para colocar", data, "no seu chat")
     }
 
-    fun String.block(block: String): String {
-        return "<atlas atlas:blocks' texture:'$block'>$this</cmd>"
+    fun TextBuilder.uriHint(data: String) {
+        hint("Clique para abrir", data, "no seu navegador")
     }
 
-    fun String.item(item: String): String {
-        return "<atlas atlas:items' texture:'$item'>$this</cmd>"
-    }
-
-    fun String.player(player: String): String {
-        return "<atlas name:'$player' hat:true> $this"
-    }
-
-    fun String.gradient(vararg color: TextColor): String {
-        return "<gr ${color.joinToString(" ") { it.formatValue() }}>$this</gr>"
-    }
-
-    fun String.gradient(vararg color: String): String {
-        return "<gr ${color.joinToString (" " )}>$this</gr>"
-    }
-
-    fun String.asComponent(): Component {
-        return TagParser.QUICK_TEXT.parseNode(this).toText()
+    fun TextBuilder.hint(heading: String, data: String, footing: String = "") {
+        color(Color.BLUE) {
+            literal("Dica: ")
+        }
+        literal("$heading ")
+        color(Color.YELLOW) {
+            italic {
+                literal("\"$data\"")
+            }
+        }
+        literal(" $footing")
     }
 }

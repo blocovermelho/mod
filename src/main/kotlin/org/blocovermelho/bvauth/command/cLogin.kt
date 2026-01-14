@@ -3,22 +3,20 @@ package org.blocovermelho.bvauth.command
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.StringArgumentType
 import kotlinx.coroutines.launch
-import net.minecraft.ChatFormatting
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 import org.blocovermelho.bvauth.BvAuthMod
 import org.blocovermelho.bvauth.api.routes.rProfile
 import org.blocovermelho.bvauth.api.types.Authenticate
 import org.blocovermelho.bvauth.ext.Colors
+import org.blocovermelho.bvauth.ext.Core.colorize
+import org.blocovermelho.bvauth.ext.Core.toLiteral
 import org.blocovermelho.bvauth.ext.Headers
-import org.blocovermelho.bvauth.ext.STFBuilder.asComponent
-import org.blocovermelho.bvauth.ext.STFBuilder.color
+import org.blocovermelho.bvauth.ext.dsl.*
 import org.blocovermelho.bvauth.ext.message
-import org.blocovermelho.bvauth.ext.username
 import org.blocovermelho.bvauth.impl.CoroutineManager
 import org.blocovermelho.bvauth.impl.Err
 import org.blocovermelho.bvauth.impl.Ok
-import org.blocovermelho.bvauth.impl.expect
 
 object cLogin {
     fun register(
@@ -40,29 +38,24 @@ object cLogin {
                     when (auth) {
                         is Ok -> {
                             val text = when (auth.value) {
-                                is Authenticate.InvalidPassword -> "Senha Inválida.".color(Colors.ERR)
-                                Authenticate.InvalidProfile -> "Pefil Inválido.".color(ChatFormatting.YELLOW)
+                                is Authenticate.InvalidPassword -> "Senha Inválida.".colorize(Colors.ERR)
+                                Authenticate.InvalidProfile -> "Pefil Inválido.".colorize(Color.YELLOW)
                                 Authenticate.LoggedIn ->  {
                                     BvAuthMod.LoggedUsers.add(player.uuid)
                                     player.setGameMode(BvAuthMod.Config.Gamemode)
                                     server.commands.sendCommands(player)
-                                    "Logado com sucesso.".color(Colors.COMMAND_GREEN)
+                                    "Logado com sucesso.".colorize(Colors.COMMAND_GREEN)
                                 }
-                                Authenticate.ServerOffline -> "Servidor Offline."
+                                Authenticate.ServerOffline -> "Servidor Offline.".toLiteral()
                             }
 
-                            player.sendSystemMessage(listOf(
-                                Headers.Server, Headers.Login,
-                                text
-                            ).joinToString (" ").asComponent())
+                            player.sendSystemMessage(
+                                buildLine(Headers.Server, Headers.Login, text)
+                            )
                         }
                         is Err -> {
                             player.sendSystemMessage(
-                                listOf(
-                                    Headers.Server,
-                                    Headers.Login,
-                                    auth.message("a autenticação com a sua conta.", "Tente novamente."),
-                                ).joinToString(" ").asComponent()
+                                buildLine(Headers.Server, Headers.Login, auth.message("a autenticação com a sua conta.", "Tente novamente."))
                             )
                         }
                     }

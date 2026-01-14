@@ -9,8 +9,9 @@ import org.blocovermelho.bvauth.BvAuthMod
 import org.blocovermelho.bvauth.api.routes.rProfile
 import org.blocovermelho.bvauth.api.types.CreateProfile
 import org.blocovermelho.bvauth.api.types.NewProfile
+import org.blocovermelho.bvauth.ext.Core.toLiteral
 import org.blocovermelho.bvauth.ext.Headers
-import org.blocovermelho.bvauth.ext.STFBuilder.asComponent
+import org.blocovermelho.bvauth.ext.dsl.buildLine
 import org.blocovermelho.bvauth.ext.message
 import org.blocovermelho.bvauth.impl.*
 
@@ -28,9 +29,9 @@ object Register {
 
                     if (senha != confirma) {
                         it.source.sendFailure(
-                            listOf(
-                                Headers.Server, Headers.Register, "As senhas informadas não são idênticas."
-                            ).joinToString(" ").asComponent()
+                            buildLine(
+                                Headers.Server, Headers.Register, "As senhas informadas não são idênticas.".toLiteral()
+                            )
                         )
                         return@executes 1
                     }
@@ -55,9 +56,9 @@ object Register {
                                         (server.playerList as VisitorGetter).`bv$unsetVisitor`(oldId)
 
                                         player.sendSystemMessage(
-                                            listOf(
-                                                Headers.Server, Headers.Register, "Perfil criado com sucesso."
-                                            ).joinToString(" ").asComponent()
+                                            buildLine(
+                                                Headers.Server, Headers.Register, "Perfil criado com sucesso.".toLiteral()
+                                            )
                                         )
 
                                         val prof = rProfile.Get(username).expect { "Profile was created." }
@@ -69,11 +70,11 @@ object Register {
 
                                     CreateProfile.UsernameExists -> {
                                         player.sendSystemMessage(
-                                            listOf(
+                                            buildLine(
                                                 Headers.Server,
                                                 Headers.Register,
-                                                "Seu perfil não pode ser criado pois o username já está em uso."
-                                            ).joinToString(" ").asComponent()
+                                                "Seu perfil não pode ser criado pois o username já está em uso.".toLiteral()
+                                            )
                                         )
                                     }
                                 }
@@ -81,11 +82,11 @@ object Register {
 
                             is Err -> {
                                 player.sendSystemMessage(
-                                    listOf(
+                                    buildLine(
                                         Headers.Server,
                                         Headers.Register,
                                         profile.message("criação do seu perfil.", "Tente novamente."),
-                                    ).joinToString(" ").asComponent()
+                                    )
                                 )
                             }
                         }

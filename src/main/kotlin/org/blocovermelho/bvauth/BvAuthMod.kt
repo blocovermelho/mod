@@ -30,12 +30,18 @@ import org.blocovermelho.bvauth.config.ModConfig
 import org.blocovermelho.bvauth.event.IdentityResolveEvent
 import org.blocovermelho.bvauth.event.PreLoginEvent
 import org.blocovermelho.bvauth.ext.Colors
+import org.blocovermelho.bvauth.ext.Core.colorize
+import org.blocovermelho.bvauth.ext.Core.suggestCmd
+import org.blocovermelho.bvauth.ext.Core.toLiteral
 import org.blocovermelho.bvauth.ext.Headers
-import org.blocovermelho.bvauth.ext.STFBuilder.asComponent
-import org.blocovermelho.bvauth.ext.STFBuilder.color
-import org.blocovermelho.bvauth.ext.STFBuilder.italic
-import org.blocovermelho.bvauth.ext.STFBuilder.player
-import org.blocovermelho.bvauth.ext.STFBuilder.suggestCommand
+import org.blocovermelho.bvauth.ext.dsl.Color
+import org.blocovermelho.bvauth.ext.dsl.buildLine
+import org.blocovermelho.bvauth.ext.dsl.color
+import org.blocovermelho.bvauth.ext.dsl.italic
+import org.blocovermelho.bvauth.ext.dsl.lineBreak
+import org.blocovermelho.bvauth.ext.dsl.literal
+import org.blocovermelho.bvauth.ext.dsl.plusAssign
+import org.blocovermelho.bvauth.ext.dsl.text
 import org.blocovermelho.bvauth.ext.getIpString
 import org.blocovermelho.bvauth.ext.username
 import org.blocovermelho.bvauth.impl.ApiClient
@@ -80,23 +86,31 @@ class BvAuthMod : ModInitializer {
                     LoggedUsers += player.uuid
                     player.setGameMode(Config.Gamemode)
                     player.sendSystemMessage(
-                        listOf(Headers.Server,
-                            "Sessão restaurada.".color(Colors.COMMAND_GREEN)
-                        ).joinToString(" ").asComponent())
+                        buildLine(Headers.Server,
+                            "Sessão restaurada.".colorize(Colors.COMMAND_GREEN)
+                        ))
                 } else {
                     val p = KnownProfiles[player.uuid]
                     if (p != null) {
                         player.sendSystemMessage(
-                            listOf(Headers.Server,
-                                "Bem vinde de volta ", p.username.color(Colors.COMMAND_GREEN),
-                                "! use ", "/login".suggestCommand("/login"), "para logar no servidor."
-                            ).joinToString(" ").asComponent())
+                            buildLine {
+                                this += Headers.Server
+                                this += "Bem vinde de volta"
+                                this += p.username.colorize(Colors.COMMAND_GREEN)
+                                this += "! use"
+                                this += { suggestCmd("/login") { text("/login".colorize(Colors.COMMAND_GREEN))} }
+                                this += "para logar no servidor."
+                            })
                     } else {
                         player.sendSystemMessage(
-                            listOf(Headers.Server,
-                                "Seja bem-vinde ao servidor" , player.username().color(Colors.COMMAND_GREEN),
-                                "! Para jogar no servidor use o comando", "/link".suggestCommand("/link"), "para linkar sua conta do discord e começe o processo de criação do seu perfil."
-                            ).joinToString(" ").asComponent())
+                            buildLine {
+                                this += Headers.Server
+                                this += "Seja bem-vinde ao servidor"
+                                this += player.username().colorize(Colors.COMMAND_GREEN)
+                                this += "! Para jogar no servidor use o comando"
+                                this += { suggestCmd("/link") { text("/link".colorize(Colors.COMMAND_GREEN))} }
+                                this += "para linkar sua conta do discord e começe o processo de criação do seu perfil."
+                            })
                     }
                 }
             }
@@ -135,31 +149,34 @@ class BvAuthMod : ModInitializer {
                             null
                         }
 
-                        Login.BannedIp -> {
-                            listOf(Headers.Server,
-                                "Seu IP foi banido do servidor.\n".color(Colors.ERR),
-                                "Your IP was banned from the server.\n\n".color(ChatFormatting.GRAY).italic(),
-
-                                "IP:", address.getIpString().color(Colors.COMMAND_GREEN)
-                            ).joinToString (" ").asComponent()
+                        Login.BannedIp -> buildLine {
+                            this += buildLine(Headers.Server, "Seu IP foi banido do servidor.".colorize(Colors.ERR))
+                            lineBreak()
+                            this += { color(Color.GREY) { italic { literal ("Your IP was banned from the server.")}}}
+                            lineBreak()
+                            lineBreak()
+                            this += buildLine ("IP:".toLiteral(),  address.getIpString().colorize(Colors.COMMAND_GREEN))
                         }
 
-                        Login.BlockedIp -> {
-                            listOf(Headers.Server,
-                                "Seu IP foi recentemente blockeado pelo servidor.\n".color(Colors.ERR),
-                                "Your IP was recently blocked by the server.\n\n".color(ChatFormatting.GRAY).italic(),
-
-                                "IP:", address.getIpString().color(Colors.COMMAND_GREEN)
-                            ).joinToString (" ").asComponent()
+                        Login.BlockedIp -> buildLine {
+                            this += buildLine (Headers.Server, "Seu IP foi recentemente blockeado pelo servidor.".colorize(Colors.ERR))
+                            lineBreak()
+                            this += { color(Color.GREY) { italic { literal ("Your IP was recently blocked by the server.")}}}
+                            lineBreak()
+                            lineBreak()
+                            this += buildLine ("IP:".toLiteral(),  address.getIpString().colorize(Colors.COMMAND_GREEN))
                         }
 
-                        Login.NewIp -> {
-                            listOf(Headers.Server,
-                                "Novo IP Detectado.".color(Colors.INFO), "Permita".color(Colors.COMMAND_GREEN), "ou", "Recuse".color(Colors.READ_ONLY_RED) ,"na sua conta do discord.\n".color(Colors.INFO),
-                                "New IP Detected. Allow/Deny on your linked discord account.\n\n".color(ChatFormatting.GRAY).italic(),
+                        Login.NewIp -> buildLine {
+                            this += buildLine(Headers.Server, "Novo IP Detectado.".colorize(Colors.INFO))
+                            this += buildLine("Permita".colorize(Colors.COMMAND_GREEN), "ou".toLiteral(), "Recuse".colorize(Colors.READ_ONLY_RED))
+                            this += "na sua conta do discord.".colorize(Colors.INFO)
+                            lineBreak()
 
-                                "IP:", address.getIpString().color(Colors.COMMAND_GREEN)
-                            ).joinToString (" ").asComponent()
+                            this += { color(Color.GREY) { italic { literal ("New IP Detected. Allow/Deny on your linked discord account.")}}}
+                            lineBreak()
+                            lineBreak()
+                            this += buildLine ("IP:".toLiteral(),  address.getIpString().colorize(Colors.COMMAND_GREEN))
                         }
                     }
                 }
