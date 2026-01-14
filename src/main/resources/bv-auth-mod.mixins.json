@@ -8,7 +8,8 @@
     "PlayerAccessor",
     "PlayerListMixin",
     "ServerConfigurationPacketListenerImplMixin",
-    "ServerLoginPacketListenerImplMixin"
+    "ServerLoginPacketListenerImplMixin",
+    "text.StyleAccessor"
   ],
   "client": [
   ],
