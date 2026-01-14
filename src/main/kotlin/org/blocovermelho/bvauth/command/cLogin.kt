@@ -31,6 +31,7 @@ object cLogin {
             .then(Commands.argument("senha", StringArgumentType.greedyString())
                 .executes {
                 val player = it.source.player!!
+                val server = it.source.server!!
                 val profile = BvAuthMod.KnownProfiles[player.uuid]!!
                 val token = StringArgumentType.getString(it, "senha").trim()
 
@@ -44,6 +45,7 @@ object cLogin {
                                 Authenticate.LoggedIn ->  {
                                     BvAuthMod.LoggedUsers.add(player.uuid)
                                     player.setGameMode(BvAuthMod.Config.Gamemode)
+                                    server.commands.sendCommands(player)
                                     "Logado com sucesso.".color(Colors.COMMAND_GREEN)
                                 }
                                 Authenticate.ServerOffline -> "Servidor Offline."

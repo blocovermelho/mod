@@ -64,6 +64,7 @@ object Register {
 
                                         BvAuthMod.KnownProfiles[player.uuid] = prof
                                         player.setGameMode(BvAuthMod.Config.Gamemode)
+                                        server.commands.sendCommands(player)
                                     }
 
                                     CreateProfile.UsernameExists -> {

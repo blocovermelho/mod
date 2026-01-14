@@ -4,6 +4,7 @@
   "package": "org.blocovermelho.bvauth.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "CommandsMixin",
     "PlayerAccessor",
     "PlayerListMixin",
     "ServerConfigurationPacketListenerImplMixin",
