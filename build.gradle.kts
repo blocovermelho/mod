@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "2.3.0"
     kotlin("plugin.serialization") version "2.3.0"
-    id("fabric-loom") version "1.14-SNAPSHOT"
+    id("net.fabricmc.fabric-loom") version "1.14-SNAPSHOT"
     id("maven-publish")
 }
 
@@ -29,7 +29,7 @@ base {
     archivesName.set(project.property("archives_base_name") as String)
 }
 
-val targetJavaVersion = 21
+val targetJavaVersion = 25
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
@@ -67,14 +67,11 @@ loom {
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft("com.mojang:minecraft:${project.property("minecraft_version")}")
-    mappings(loom.layered {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-${project.property("minecraft_version")}:${project.property("parchment_version")}@zip")
-    })
-    modImplementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
-    modImplementation("net.fabricmc:fabric-language-kotlin:${project.property("kotlin_loader_version")}")
 
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${project.property("fabric_version")}")
+    implementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
+    implementation("net.fabricmc:fabric-language-kotlin:${project.property("kotlin_loader_version")}")
+
+    implementation("net.fabricmc.fabric-api:fabric-api:${project.property("fabric_version")}")
 
     implementation("folk.sisby:kaleido-config:${project.property("kaleido_version")}")
     include("folk.sisby:kaleido-config:${project.property("kaleido_version")}")
@@ -82,12 +79,6 @@ dependencies {
     /*
     * Not as happy to bring PHAPI since its a dependency I don't control.
     * Ktor I know will be sticking around, and well doesn't depend on minecraft versions
-    * This is here until I replace stuff with vanilla text components since playing with
-    * them is a pain. Between that and kyori, I'm sticking with PHApi.
-    */
-
-    modImplementation("eu.pb4:placeholder-api:${project.property("placeholder_api_version")}")
-    include("eu.pb4:placeholder-api:${project.property("placeholder_api_version")}")
 
     /*
     * KTOR. I really wished kotlin had sections so I could tuck away this.
@@ -125,7 +116,7 @@ tasks.processResources {
     filesMatching("fabric.mod.json") {
         expand(
             "version" to project.version,
-            "minecraft_version" to project.property("minecraft_version") as String,
+            "mc_semver" to project.property("mc_semver") as String,
             "loader_version" to project.property("loader_version")  as String,
             "kotlin_loader_version" to project.property("kotlin_loader_version")  as String
         )
