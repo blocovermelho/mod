@@ -80,16 +80,6 @@ dependencies {
     include("folk.sisby:kaleido-config:${project.property("kaleido_version")}")
 
     /*
-    * Not as happy to bring PHAPI since its a dependency I don't control.
-    * Ktor I know will be sticking around, and well doesn't depend on minecraft versions
-    * This is here until I replace stuff with vanilla text components since playing with
-    * them is a pain. Between that and kyori, I'm sticking with PHApi.
-    */
-
-    modImplementation("eu.pb4:placeholder-api:${project.property("placeholder_api_version")}")
-    include("eu.pb4:placeholder-api:${project.property("placeholder_api_version")}")
-
-    /*
     * KTOR. I really wished kotlin had sections so I could tuck away this.
     */
 
