@@ -14,6 +14,7 @@ import org.blocovermelho.bvauth.ext.Headers
 import org.blocovermelho.bvauth.ext.dsl.buildLine
 import org.blocovermelho.bvauth.ext.message
 import org.blocovermelho.bvauth.impl.*
+import org.blocovermelho.bvauth.ext.unaryMinus
 
 object Register {
     fun register(
@@ -64,7 +65,7 @@ object Register {
                                         val prof = rProfile.Get(username).expect { "Profile was created." }
 
                                         BvAuthMod.KnownProfiles[player.uuid] = prof
-                                        player.setGameMode(BvAuthMod.Config.Gamemode)
+                                        player.setGameMode(-BvAuthMod.Config.Gamemode)
                                         server.commands.sendCommands(player)
                                     }
 

@@ -11,6 +11,7 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import org.blocovermelho.bvauth.BvAuthMod
 import org.blocovermelho.bvauth.config.ModConfig
+import org.blocovermelho.bvauth.ext.unaryMinus
 
 object ApiClient {
     lateinit var client: HttpClient
@@ -22,7 +23,7 @@ object ApiClient {
             install(Auth) {
                 bearer {
                     loadTokens {
-                        BearerTokens(settings.ApiToken, "")
+                        BearerTokens(-settings.ApiToken, "")
                     }
                 }
             }
@@ -42,11 +43,11 @@ object ApiClient {
 
     suspend inline fun <reified T> Get(path: String): HTTPReply<T> {
         return client.m_get<T>(
-            if (settings.TLS) {
+            if (-settings.TLS) {
                 "https://"
             } else {
                 "http://"
-            } + settings.Endpoint + path
+            } + (-settings.Endpoint) + path
         ) {
 
         }
@@ -54,11 +55,11 @@ object ApiClient {
 
     suspend inline fun <reified T, reified A> Post(path: String, body: A? = null): HTTPReply<T> {
         return client.m_post<T>(
-            if (settings.TLS) {
+            if (-settings.TLS) {
                 "https://"
             } else {
                 "http://"
-            } + settings.Endpoint + path
+            } + (-settings.Endpoint) + path
         ) {
             if (body != null) {
                 contentType(ContentType.Application.Json)

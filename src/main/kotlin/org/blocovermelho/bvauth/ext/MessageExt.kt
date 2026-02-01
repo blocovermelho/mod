@@ -25,8 +25,8 @@ object Colors {
 }
 
 object Headers {
-    val Server: Component
-        get() = if (BvAuthMod.Config.Server.Nome.isBlank()) {
+    val Server: Component by lazy {
+        if (BvAuthMod.Config.Server.Nome.value().isBlank()) {
             buildComponent {
                 bracketed {
                     color(Colors.READ_ONLY_RED) {
@@ -38,11 +38,12 @@ object Headers {
             buildComponent {
                 bracketed {
                     color(Colors.READ_ONLY_RED) {
-                        literal(BvAuthMod.Config.Server.Nome)
+                        literal(BvAuthMod.Config.Server.Nome.value())
                     }
                 }
             }
         }
+    }
 
 
     val Login = "Login".colorize(Colors.AUTH)

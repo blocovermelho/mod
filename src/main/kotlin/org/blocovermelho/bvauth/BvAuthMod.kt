@@ -49,6 +49,8 @@ import org.blocovermelho.bvauth.impl.ApiClient.settings
 import org.blocovermelho.bvauth.impl.CoroutineManager
 import org.blocovermelho.bvauth.impl.expect
 import org.blocovermelho.bvauth.impl.ok
+import org.blocovermelho.bvauth.ext.divAssign
+import org.blocovermelho.bvauth.ext.unaryMinus
 import org.slf4j.LoggerFactory
 import java.util.*
 
@@ -67,9 +69,9 @@ class BvAuthMod : ModInitializer {
             PlayerNotification = CoroutineManager.scope.spawnPlayerNotification(it.playerList)
             runBlocking {
                 val me = GameServer.Me().expect { "A gameserver must exist for the server to use this mod." }
-                Config.Server.Nome = me.name
-                Config.Server.Versoes = me.versions
-                Config.Server.Staff = me.staff.map { it.username }
+                Config.Server.Nome /= me.name
+                Config.Server.Versoes /= me.versions
+                Config.Server.Staff /= me.staff.map { o -> o.username }
 
                 Config.save()
 
@@ -84,7 +86,7 @@ class BvAuthMod : ModInitializer {
                 val restore = rProfile.SessionRestore(player.username())
                 if (restore) {
                     LoggedUsers += player.uuid
-                    player.setGameMode(Config.Gamemode)
+                    player.setGameMode(-Config.Gamemode)
                     player.sendSystemMessage(
                         buildLine(Headers.Server,
                             "Sessão restaurada.".colorize(Colors.COMMAND_GREEN)
@@ -201,11 +203,11 @@ class BvAuthMod : ModInitializer {
         val KeepAlive = CoroutineManager.scope.spawnKeepAlive()
         var PlayerNotification : PlayerNotificationActorHandle? = null
         val Websocket = CoroutineManager.scope.spawnWebsocket(
-            if (settings.TLS) {
+            if (-settings.TLS) {
                 "wss://"
             } else {
                 "ws://"
-            } + Config.Auth.Endpoint + "/server/@me/ws", Api.client, Config.Auth.ApiToken
+            } + (-Config.Auth.Endpoint) + "/server/@me/ws", Api.client, -Config.Auth.ApiToken
         )
         var KnownProfiles = mutableMapOf<UUID, Profile>()
         var DiscordLinks = mutableMapOf<String, WebSocketMessage.DiscordLink>()
