@@ -12,4 +12,7 @@ object GameServer {
 
     suspend fun Me() =
         ApiClient.Get<Server>("$BASE_PATH/@me")
+
+    suspend fun UpdateVersions(versions: List<String>) =
+        ApiClient.Post<Server, List<String>>("$BASE_PATH/@me/versions", versions)
 }
