@@ -10,22 +10,23 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
 import net.fabricmc.loader.api.FabricLoader
-import net.minecraft.ChatFormatting
-import net.minecraft.network.chat.Component
 import org.blocovermelho.bvauth.actor.KeepAliveActor.Companion.spawnKeepAlive
 import org.blocovermelho.bvauth.actor.PlayerNotificationActor.Companion.spawnPlayerNotification
 import org.blocovermelho.bvauth.actor.PlayerNotificationActorHandle
 import org.blocovermelho.bvauth.actor.WebsocketActor.Companion.spawnWebsocket
 import org.blocovermelho.bvauth.api.routes.GameServer
+import org.blocovermelho.bvauth.api.routes.Root
 import org.blocovermelho.bvauth.api.routes.rProfile
+import org.blocovermelho.bvauth.api.types.BedrockAccountStanding
 import org.blocovermelho.bvauth.api.types.Login
 import org.blocovermelho.bvauth.api.types.Profile
 import org.blocovermelho.bvauth.api.types.WebSocketMessage
-import org.blocovermelho.bvauth.command.ChangeId
 import org.blocovermelho.bvauth.command.ChangePassword
 import org.blocovermelho.bvauth.command.Link
 import org.blocovermelho.bvauth.command.Register
 import org.blocovermelho.bvauth.command.cLogin
+import org.blocovermelho.bvauth.compat.BedrockGeyserCompat
+import org.blocovermelho.bvauth.compat.PlaceholderApiCompat
 import org.blocovermelho.bvauth.config.ModConfig
 import org.blocovermelho.bvauth.event.IdentityResolveEvent
 import org.blocovermelho.bvauth.event.PreLoginEvent
@@ -76,6 +77,37 @@ class BvAuthMod : ModInitializer {
                 Config.save()
 
                 Logger.info("Carregado informações sobre o servidor ${me.name} para a config.")
+
+                val onConfig = (-Config.Server.Versoes).toHashSet()
+                val javaVersions =  onConfig.dropWhile { x -> x.startsWith("Bedrock") }.toSet()
+                val toUpdate = javaVersions.toMutableSet()
+
+
+                BedrockCompat.ifPresentOrElse({ bc ->
+                    Logger.info("Versões atualmentes suportadas pelo Geyser-Fabric: ${bc.supportedBedrockVersions}")
+
+                    PlaceholderCompat.ifPresent { ph ->
+                        ph.registerBedrockPlaceholder(bc)
+                    }
+
+                    runBlocking {
+                        val bedrockVersions = Root.GetVersionRanges(bc.supportedBedrockVersions).ok().orEmpty().map { version -> "Bedrock $version" }.toSet()
+                        Logger.info("Bedrock versions: $bedrockVersions")
+                        toUpdate += bedrockVersions
+                    }
+                }) {
+                    PlaceholderCompat.ifPresent { ph ->
+                        ph.registerDummyPlaceholders()
+                    }
+                }
+
+                if (toUpdate != onConfig) {
+                    Logger.info("Versões suportadas são diferentes. Atualizando: $onConfig -> $toUpdate.")
+                    GameServer.UpdateVersions(toUpdate.toList())
+
+                    Config.Server.Versoes /= toUpdate.toList()
+                    Config.save()
+                }
             }
         }
 
@@ -83,41 +115,41 @@ class BvAuthMod : ModInitializer {
             val player = impl.player
 
             runBlocking {
-                val restore = rProfile.SessionRestore(player.username())
-                if (restore) {
-                    LoggedUsers += player.uuid
-                    player.setGameMode(-Config.Gamemode)
-                    player.sendSystemMessage(
-                        buildLine(Headers.Server,
-                            "Sessão restaurada.".colorize(Colors.COMMAND_GREEN)
-                        ))
-                } else {
-                    val p = KnownProfiles[player.uuid]
-                    if (p != null) {
+                val profile = KnownProfiles[player.uuid]
+
+                if (profile != null) {
+                    val restore = rProfile.SessionRestore(profile.username)
+                    if (restore) {
+                        LoggedUsers += player.uuid
+                        player.setGameMode(-Config.Gamemode)
                         player.sendSystemMessage(
-                            buildLine {
-                                this += Headers.Server
-                                this += "Bem vinde de volta"
-                                this += p.username.colorize(Colors.COMMAND_GREEN)
-                                this += "! use"
-                                this += { suggestCmd("/login") { text("/login".colorize(Colors.COMMAND_GREEN))} }
-                                this += "para logar no servidor."
-                            })
+                            buildLine(Headers.Server,
+                                "Sessão restaurada.".colorize(Colors.COMMAND_GREEN)
+                            ))
                     } else {
                         player.sendSystemMessage(
                             buildLine {
                                 this += Headers.Server
-                                this += "Seja bem-vinde ao servidor"
-                                this += player.username().colorize(Colors.COMMAND_GREEN)
-                                this += "! Para jogar no servidor use o comando"
-                                this += { suggestCmd("/link") { text("/link".colorize(Colors.COMMAND_GREEN))} }
-                                this += "para linkar sua conta do discord e começe o processo de criação do seu perfil."
+                                this += "Bem vinde de volta"
+                                this += profile.username.colorize(Colors.COMMAND_GREEN)
+                                this += "! use"
+                                this += { suggestCmd("/login") { text("/login".colorize(Colors.COMMAND_GREEN))} }
+                                this += "para logar no servidor."
                             })
                     }
+                } else {
+                    player.sendSystemMessage(
+                        buildLine {
+                            this += Headers.Server
+                            this += "Seja bem-vinde ao servidor"
+                            this += player.username().colorize(Colors.COMMAND_GREEN)
+                            this += "! Para jogar no servidor use o comando"
+                            this += { suggestCmd("/link") { text("/link".colorize(Colors.COMMAND_GREEN))} }
+                            this += "para linkar sua conta do discord e começe o processo de criação do seu perfil."
+                        })
                 }
+                KeepAlive.playerJoined(profile?.username ?: player.username())
             }
-
-            KeepAlive.playerJoined(player.username())
         }
 
         ServerPlayConnectionEvents.DISCONNECT.register { impl, server ->
@@ -131,10 +163,27 @@ class BvAuthMod : ModInitializer {
 
         IdentityResolveEvent.IDENTITY_RESOLVE.register { address, username ->
             runBlocking {
-                val prof = rProfile.Get(username).ok()
+                var prof = rProfile.Get(username).ok()
 
-                if (prof != null && !KnownProfiles.contains(prof.id)) {
-                    KnownProfiles.putIfAbsent(prof.id, prof)
+                BedrockCompat.ifPresent { bc ->
+                    bc.getConnectionByName(username).ifPresent {
+                        if (prof == null) {
+                            runBlocking {
+                                val standing = rProfile.ResolveBedrock(username).ok()
+                                if (standing != null) {
+                                    prof = when (standing) {
+                                        is BedrockAccountStanding.KnownProfile -> standing.profile
+                                        is BedrockAccountStanding.RenamedProfile -> standing.profile
+                                        is BedrockAccountStanding.UnknownUser -> null
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (prof != null && !KnownProfiles.contains(prof!!.id)) {
+                    KnownProfiles.putIfAbsent(prof!!.id, prof!!)
                 }
 
                 prof?.id
@@ -213,5 +262,22 @@ class BvAuthMod : ModInitializer {
         var DiscordLinks = mutableMapOf<String, WebSocketMessage.DiscordLink>()
         var LoggedUsers = mutableSetOf<UUID>()
 
+        val BedrockCompat : Optional<BedrockGeyserCompat> by lazy {
+            if (FabricLoader.getInstance().isModLoaded("geyser-fabric")) {
+                Logger.info("Geyser-Fabric Detected. Loading Geyser Support.")
+                ServiceLoader.load(BedrockGeyserCompat::class.java).findFirst()
+            } else {
+                Optional.empty()
+            }
+        }
+
+        val PlaceholderCompat: Optional<PlaceholderApiCompat> by lazy {
+            if (FabricLoader.getInstance().isModLoaded("placeholder-api")) {
+                Logger.info("PlaceholderAPI Detected. Loading PlaceholderAPI support.")
+                ServiceLoader.load(PlaceholderApiCompat::class.java).findFirst()
+            } else {
+                Optional.empty()
+            }
+        }
     }
 }
