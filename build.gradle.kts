@@ -58,6 +58,10 @@ repositories {
         name = "Nucleoid"
         url = uri("https://maven.nucleoid.xyz/")
     }
+    maven {
+        name = "Geyser"
+        url = uri("https://repo.opencollab.dev/main/")
+    }
 }
 
 loom {
@@ -78,6 +82,9 @@ dependencies {
 
     implementation("folk.sisby:kaleido-config:${project.property("kaleido_version")}")
     include("folk.sisby:kaleido-config:${project.property("kaleido_version")}")
+
+    modCompileOnly("eu.pb4:placeholder-api:${project.property("placeholderapi_version")}")
+    compileOnly("org.geysermc.geyser:api:2.9.0-SNAPSHOT")
 
     /*
     * KTOR. I really wished kotlin had sections so I could tuck away this.
