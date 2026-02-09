@@ -26,7 +26,7 @@ object rProfile {
 
     // NOTE: XUID resolution isn't yet implemented. Omitted.
     suspend fun ConnectBedrock(username: String, gamertag: String) =
-        ApiClient.Post<Connection, Any>("$BASE_PATH/$username/bedrock/?gamertag=$gamertag")
+        ApiClient.Post<Connection, Any>("$BASE_PATH/$username/bedrock?gamertag=$gamertag")
 
     suspend fun Authenticate(username: String, ip: String, password: String) =
         ApiClient.Post<Authenticate, Any>("$BASE_PATH/$username/authenticate?ip=$ip&password=${password.UrlEncode()}")
