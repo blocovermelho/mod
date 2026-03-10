@@ -21,12 +21,15 @@ object rProfile {
     suspend fun ResolveBedrock(gamertag: String) =
         ApiClient.Get<BedrockAccountStanding>("$BASE_PATH/resolve_bedrock?gamertag=$gamertag")
 
+    suspend fun ResolveDiscord(id: String) =
+        ApiClient.Get<List<Profile>>("$BASE_PATH/resolve_discord?id=$id")
+
     suspend fun ConnectMojang(username: String, id: UUID) =
         ApiClient.Post<Connection, Any>("$BASE_PATH/$username/mojang?id=$id")
 
     // NOTE: XUID resolution isn't yet implemented. Omitted.
     suspend fun ConnectBedrock(username: String, gamertag: String) =
-        ApiClient.Post<Connection, Any>("$BASE_PATH/$username/bedrock/?gamertag=$gamertag")
+        ApiClient.Post<Connection, Any>("$BASE_PATH/$username/bedrock?gamertag=$gamertag")
 
     suspend fun Authenticate(username: String, ip: String, password: String) =
         ApiClient.Post<Authenticate, Any>("$BASE_PATH/$username/authenticate?ip=$ip&password=${password.UrlEncode()}")

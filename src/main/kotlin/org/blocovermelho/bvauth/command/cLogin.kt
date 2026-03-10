@@ -17,6 +17,7 @@ import org.blocovermelho.bvauth.ext.message
 import org.blocovermelho.bvauth.impl.CoroutineManager
 import org.blocovermelho.bvauth.impl.Err
 import org.blocovermelho.bvauth.impl.Ok
+import org.blocovermelho.bvauth.ext.unaryMinus
 
 object cLogin {
     fun register(
@@ -42,7 +43,7 @@ object cLogin {
                                 Authenticate.InvalidProfile -> "Pefil Inválido.".colorize(Color.YELLOW)
                                 Authenticate.LoggedIn ->  {
                                     BvAuthMod.LoggedUsers.add(player.uuid)
-                                    player.setGameMode(BvAuthMod.Config.Gamemode)
+                                    player.setGameMode(-BvAuthMod.Config.Gamemode)
                                     server.commands.sendCommands(player)
                                     "Logado com sucesso.".colorize(Colors.COMMAND_GREEN)
                                 }
