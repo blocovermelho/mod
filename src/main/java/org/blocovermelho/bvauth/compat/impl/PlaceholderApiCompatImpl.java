@@ -13,7 +13,7 @@ public class PlaceholderApiCompatImpl implements PlaceholderApiCompat {
     static final Identifier BEDROCK_STATUS = Identifier.fromNamespaceAndPath("bvauth", "bedrock_status");
     @Override
     public void registerBedrockPlaceholder(BedrockGeyserCompat bedrockCompat) {
-        Placeholders.register(BEDROCK_STATUS, (ctx, arg) -> {
+        Placeholders.registerServer(BEDROCK_STATUS, (ctx, arg) -> {
             if (!ctx.hasPlayer()) {
                 return PlaceholderResult.invalid("No player!");
             }
@@ -30,6 +30,6 @@ public class PlaceholderApiCompatImpl implements PlaceholderApiCompat {
     ///  Exists so that placeholders aren't resolved on the case there is no compatibility
     @Override
     public void registerDummyPlaceholders() {
-        Placeholders.register(BEDROCK_STATUS,  (ctx, arg) -> PlaceholderResult.value(""));
+        Placeholders.registerServer(BEDROCK_STATUS,  (ctx, arg) -> PlaceholderResult.value(""));
     }
 }

@@ -16,7 +16,6 @@
 
 package org.blocovermelho.bvauth.ext.dsl
 
-import net.minecraft.commands.arguments.selector.SelectorPattern
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.FontDescription
@@ -150,22 +149,22 @@ public fun TextBuilder.keybind(key: String) {
  *
  * @author NoComment1105
  */
-@TextDsl
-public fun TextBuilder.nbt(
-    pathPattern: String,
-    interpreting: Boolean,
-    separator: Optional<Component>,
-    nbt: DataSource
-) {
-    styleAndAppend(
-        Component.nbt(
-            pathPattern,
-            interpreting,
-            separator,
-            nbt
-        )
-    )
-}
+//@TextDsl
+//public fun TextBuilder.nbt(
+//    pathPattern: String,
+//    interpreting: Boolean,
+//    separator: Optional<Component>,
+//    nbt: DataSource
+//) {
+//    styleAndAppend(
+//        Component.nbt(
+//            pathPattern,
+//            interpreting,
+//            separator,
+//            nbt
+//        )
+//    )
+//}
 
 /**
  * Adds a pre-existing [Component] instance.
@@ -203,10 +202,10 @@ public fun TextBuilder.scoreboard(name: String, objective: String) {
  *
  * @author NoComment1105
  */
-@TextDsl
-public fun TextBuilder.selector(selector: SelectorPattern, separator: Optional<Component>) {
-    styleAndAppend(Component.selector(selector, separator))
-}
+//@TextDsl
+//public fun TextBuilder.selector(selector: String, separator: Optional<Component>) {
+//    styleAndAppend(Component.selector(SelectorPattern, separator))
+//}
 
 /**
  * Adds a mutable empty text.

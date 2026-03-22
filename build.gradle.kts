@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "2.3.0"
     kotlin("plugin.serialization") version "2.3.0"
-    id("net.fabricmc.fabric-loom") version "1.14-SNAPSHOT"
+    id("net.fabricmc.fabric-loom") version "1.15-SNAPSHOT"
     id("maven-publish")
 }
 
@@ -80,8 +80,8 @@ dependencies {
     implementation("folk.sisby:kaleido-config:${project.property("kaleido_version")}")
     include("folk.sisby:kaleido-config:${project.property("kaleido_version")}")
 
-    modCompileOnly("eu.pb4:placeholder-api:${project.property("placeholderapi_version")}")
-    compileOnly("org.geysermc.geyser:api:2.9.0-SNAPSHOT")
+    compileOnly("eu.pb4:placeholder-api:${project.property("placeholderapi_version")}")
+    compileOnly("org.geysermc.geyser:api:${project.property("geyserapi_version")}")
 
     /*
     * KTOR. I really wished kotlin had sections so I could tuck away this.
