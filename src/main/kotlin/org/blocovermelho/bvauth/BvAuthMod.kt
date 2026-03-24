@@ -24,6 +24,7 @@ import org.blocovermelho.bvauth.api.types.WebSocketMessage
 import org.blocovermelho.bvauth.command.ChangePassword
 import org.blocovermelho.bvauth.command.Link
 import org.blocovermelho.bvauth.command.Register
+import org.blocovermelho.bvauth.command.admin.UpdateVersion
 import org.blocovermelho.bvauth.command.cLogin
 import org.blocovermelho.bvauth.compat.BedrockGeyserCompat
 import org.blocovermelho.bvauth.compat.PlaceholderApiCompat
@@ -64,6 +65,7 @@ class BvAuthMod : ModInitializer {
             cLogin.register(dispatcher)
             Register.register(dispatcher)
             ChangePassword.register(dispatcher)
+            UpdateVersion.register(dispatcher)
         }
 
         ServerLifecycleEvents.SERVER_STARTED.register {

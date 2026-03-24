@@ -49,7 +49,7 @@ object Headers {
     val Login = "Login".colorize(Colors.AUTH)
     val Register = "Registrar".colorize(Colors.AUTH)
     val ChangePw = "Mudar Senha".colorize(Colors.AUTH)
-
+    val Admin = "Admin".colorize(Colors.ERR)
     val Link = "Link".colorize(Colors.LINK)
 }
 
