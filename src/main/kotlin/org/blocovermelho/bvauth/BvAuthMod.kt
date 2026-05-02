@@ -30,6 +30,7 @@ import org.blocovermelho.bvauth.compat.BedrockGeyserCompat
 import org.blocovermelho.bvauth.compat.PlaceholderApiCompat
 import org.blocovermelho.bvauth.config.ModConfig
 import org.blocovermelho.bvauth.event.IdentityResolveEvent
+import org.blocovermelho.bvauth.event.ObfuscateNameEvent
 import org.blocovermelho.bvauth.event.PreLoginEvent
 import org.blocovermelho.bvauth.ext.Colors
 import org.blocovermelho.bvauth.ext.Core.colorize
@@ -53,6 +54,7 @@ import org.blocovermelho.bvauth.impl.expect
 import org.blocovermelho.bvauth.impl.ok
 import org.blocovermelho.bvauth.ext.divAssign
 import org.blocovermelho.bvauth.ext.unaryMinus
+import org.blocovermelho.bvauth.impl.unwrap_or
 import org.slf4j.LoggerFactory
 import java.util.*
 
@@ -192,6 +194,10 @@ class BvAuthMod : ModInitializer {
             }
         }
 
+        ObfuscateNameEvent.REPLACE_NAME.register {
+            BadNames.random()
+        }
+
         PreLoginEvent.PRE_LOGIN.register { server, address, id ->
             val profile = KnownProfiles[id.id]
             if (profile != null) {
@@ -260,6 +266,10 @@ class BvAuthMod : ModInitializer {
                 "ws://"
             } + (-Config.Auth.Endpoint) + "/server/@me/ws", Api.client, -Config.Auth.ApiToken
         )
+
+        val BadNames by lazy {
+            runBlocking {  Root.BadNames().unwrap_or(listOf("fail2ban")) }
+        }
         var KnownProfiles = mutableMapOf<UUID, Profile>()
         var DiscordLinks = mutableMapOf<String, WebSocketMessage.DiscordLink>()
         var LoggedUsers = mutableSetOf<UUID>()

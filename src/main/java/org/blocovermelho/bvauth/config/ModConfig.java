@@ -22,6 +22,8 @@ public class ModConfig extends ReflectiveConfig {
         public final TrackedValue<ValueList<String>> Staff = this.list("");
         @Comment("As versões que esse servidor suporta")
         public final TrackedValue<ValueList<String>> Versoes = this.list("");
+        @Comment("Se a lista de players deverá ser obfuscada")
+        public final TrackedValue<Boolean> Obfuscar = this.value(true);
     }
 
     public static class ApiSettings  extends Section {
