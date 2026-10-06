@@ -104,10 +104,6 @@ dependencies {
 
     implementation("io.ktor:ktor-serialization-kotlinx-json:${project.property("ktor_version")}")
     transitiveInclude("io.ktor:ktor-serialization-kotlinx-json:${project.property("ktor_version")}")
-
-    transitiveInclude.resolvedConfiguration.resolvedArtifacts.forEach {
-        include(it.moduleVersion.id.toString())
-    }
 }
 
 tasks.processResources {
@@ -142,6 +138,12 @@ tasks.withType<KotlinCompile>().configureEach {
 tasks.jar {
     from("LICENSE") {
         rename { "${it}_${project.base.archivesName.get()}" }
+    }
+}
+
+afterEvaluate {
+    transitiveInclude.resolvedConfiguration.resolvedArtifacts.forEach { artifact ->
+        project.dependencies.add("include", artifact.moduleVersion.id.toString())
     }
 }
 

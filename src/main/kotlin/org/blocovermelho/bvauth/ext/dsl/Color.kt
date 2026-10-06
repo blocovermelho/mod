@@ -162,7 +162,7 @@ value class Color(val value: Int) {
          * @author NoComment1105
          */
         fun from(color: ChatFormatting): Color {
-            return Color(color.color?.let(::Color)?.value ?: BLACK.value)
+            return Color(color.ordinal.let(::Color).value)
         }
 
         /**
