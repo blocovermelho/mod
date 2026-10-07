@@ -40,7 +40,7 @@ object UpdateVersion {
             } else {
                 it.source.sendFailure(
                     buildLine(Headers.Server, Headers.Admin, buildLine {
-                        this += "Não foi possivel descobrir a versão do jogo automáticamente. Adcione a versão manualmente e tente novamente."
+                        this += "Não foi possivel descobrir a versão do jogo automáticamente. Adicione a versão manualmente e tente novamente."
                     })
                 )
             }

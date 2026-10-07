@@ -1,6 +1,8 @@
 package org.blocovermelho.bvauth
 
 
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.job
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -11,9 +13,11 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
 import net.fabricmc.loader.api.FabricLoader
 import org.blocovermelho.bvauth.actor.KeepAliveActor.Companion.spawnKeepAlive
+import org.blocovermelho.bvauth.actor.KeepAliveActorHandle
 import org.blocovermelho.bvauth.actor.PlayerNotificationActor.Companion.spawnPlayerNotification
 import org.blocovermelho.bvauth.actor.PlayerNotificationActorHandle
 import org.blocovermelho.bvauth.actor.WebsocketActor.Companion.spawnWebsocket
+import org.blocovermelho.bvauth.actor.WebsocketActorHandle
 import org.blocovermelho.bvauth.api.routes.GameServer
 import org.blocovermelho.bvauth.api.routes.Root
 import org.blocovermelho.bvauth.api.routes.rProfile
@@ -63,6 +67,7 @@ class BvAuthMod : ModInitializer {
     override fun onInitialize() {
 
         CommandRegistrationCallback.EVENT.register { dispatcher, _, _ ->
+            Logger.info("Registrando comandos...")
             Link.register(dispatcher)
             cLogin.register(dispatcher)
             Register.register(dispatcher)
@@ -88,7 +93,7 @@ class BvAuthMod : ModInitializer {
 
 
                 BedrockCompat.ifPresentOrElse({ bc ->
-                    Logger.info("Versões atualmentes suportadas pelo Geyser-Fabric: ${bc.supportedBedrockVersions}")
+                    Logger.info("Versões atualmente suportadas pelo Geyser-Fabric: ${bc.supportedBedrockVersions}")
 
                     PlaceholderCompat.ifPresent { ph ->
                         ph.registerBedrockPlaceholder(bc)
@@ -242,6 +247,14 @@ class BvAuthMod : ModInitializer {
             }
 
             null
+        }
+
+        ServerLifecycleEvents.SERVER_STOPPING.register {
+            Websocket.close()
+            CoroutineManager.scope.coroutineContext.cancel()
+            CoroutineManager.scope.cancel()
+            CoroutineManager.supervisor.cancel()
+            CoroutineManager.dispatcher.cancel()
         }
     }
 

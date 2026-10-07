@@ -13,8 +13,8 @@ object CoroutineManager {
         thread.name = "BV-Thread-Handler"
         thread
     }.asCoroutineDispatcher()
-
-    val scope: CoroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
+    val supervisor = SupervisorJob()
+    val scope: CoroutineScope = CoroutineScope(supervisor + dispatcher)
 
     init {
         BvAuthMod.Logger.info("Initialized Coroutine Manager.")
