@@ -153,19 +153,6 @@ value class Color(val value: Int) {
         }
 
         /**
-         * Gets a color from [Formatting] and converts it to [Color].
-         * If the color value is null, it defaults to black.
-         *
-         * @param color The [Formatting] to convert
-         * @return A [Color] from [ChatFormatting] or black if invalid/null
-         *
-         * @author NoComment1105
-         */
-        fun from(color: ChatFormatting): Color {
-            return Color(color.ordinal.let(::Color).value)
-        }
-
-        /**
          * Gets a color from [MapColor] and converts it to [Color].
          *
          * @param color The [MapColor] to convert
