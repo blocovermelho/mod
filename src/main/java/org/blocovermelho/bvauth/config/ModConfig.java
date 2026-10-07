@@ -32,7 +32,7 @@ public class ModConfig extends ReflectiveConfig {
         @Comment("O Endpoint da API do Bloco Vermelho")
         public final TrackedValue<String> Endpoint = this.value("api.blocovermelho.org");
         @Comment("Se a conexão usa TLS. Para a API oficial, o valor sempre é `true`.")
-        @Comment("Não mecha se você não sabe o que está fazendo.")
+        @Comment("Não mexa se você não sabe o que está fazendo.")
         public final TrackedValue<Boolean> TLS = this.value(true);
     }
 }

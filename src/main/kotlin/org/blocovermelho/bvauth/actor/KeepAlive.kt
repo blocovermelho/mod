@@ -36,7 +36,6 @@ class KeepAliveS {
     }
 
     fun playerJoined(username: String) {
-
         BvAuthMod.Logger.info("[a: KeepAlive] Event:PlayerJoined($username)")
         playerList.add(username)
     }
@@ -57,7 +56,7 @@ class KeepAliveActor(
     suspend fun run() {
         var flag = true
         while (flag) {
-            selectUnbiased<Unit> {
+            selectUnbiased {
                 onTimeout(state.until()) {
                     BvAuthMod.Logger.info("[a: KeepAlive] Sent KeepAlive")
                     GameServer.KeepAlive(KeepAlive(state.playerList.toList(), null))

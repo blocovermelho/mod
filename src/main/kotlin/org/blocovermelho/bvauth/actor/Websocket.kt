@@ -97,6 +97,9 @@ class WebsocketActor(
                     joinAll(reader, control)
                 }
 
+            } catch (e: CancellationException) {
+                BvAuthMod.Logger.info("[Websocket] Connection closed. Server is shutting down.")
+                throw e
             } catch (e: Exception) {
                 BvAuthMod.Logger.warn("[Websocket] Connection failed: ${e.message}, retrying in ${state.backoff}")
                 delay(state.backoff)

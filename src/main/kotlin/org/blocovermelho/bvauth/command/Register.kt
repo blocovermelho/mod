@@ -38,7 +38,7 @@ object Register {
                     }
 
                     val player = it.source.player!!
-                    val username = player.gameProfile!!.name
+                    val username = player.gameProfile.name
                     val server = it.source.server
 
                     CoroutineManager.scope.launch {
