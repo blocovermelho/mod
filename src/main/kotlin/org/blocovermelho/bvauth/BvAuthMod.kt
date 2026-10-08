@@ -8,6 +8,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNamingStrategy
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.contextual
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
@@ -271,6 +273,9 @@ class BvAuthMod : ModInitializer {
             classDiscriminator = "kind"
             namingStrategy = JsonNamingStrategy.SnakeCase
             explicitNulls = false
+            serializersModule = SerializersModule {
+                contextual(UUIDSerializer)
+            }
         }
 
         val Logger = LoggerFactory.getLogger("BVMod")
