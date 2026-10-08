@@ -5,8 +5,11 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.job
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNamingStrategy
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.contextual
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
@@ -25,6 +28,7 @@ import org.blocovermelho.bvauth.api.types.BedrockAccountStanding
 import org.blocovermelho.bvauth.api.types.Login
 import org.blocovermelho.bvauth.api.types.Profile
 import org.blocovermelho.bvauth.api.types.WebSocketMessage
+import org.blocovermelho.bvauth.api.types.serde.UUIDSerializer
 import org.blocovermelho.bvauth.command.ChangePassword
 import org.blocovermelho.bvauth.command.Link
 import org.blocovermelho.bvauth.command.Register
@@ -61,6 +65,9 @@ import org.blocovermelho.bvauth.ext.unaryMinus
 import org.blocovermelho.bvauth.impl.unwrap_or
 import org.slf4j.LoggerFactory
 import java.util.*
+import kotlin.io.path.div
+import kotlin.io.path.exists
+import kotlin.io.path.readText
 
 class BvAuthMod : ModInitializer {
 
@@ -119,6 +126,8 @@ class BvAuthMod : ModInitializer {
                 }
             }
         }
+
+        Logger.info("Carregado ${UUIDMigrations.size} migrações de UUID.")
 
         ServerPlayConnectionEvents.JOIN.register { impl, sender, server ->
             val player = impl.player
@@ -264,6 +273,9 @@ class BvAuthMod : ModInitializer {
             classDiscriminator = "kind"
             namingStrategy = JsonNamingStrategy.SnakeCase
             explicitNulls = false
+            serializersModule = SerializersModule {
+                contextual(UUIDSerializer)
+            }
         }
 
         val Logger = LoggerFactory.getLogger("BVMod")
@@ -286,6 +298,14 @@ class BvAuthMod : ModInitializer {
         var KnownProfiles = mutableMapOf<UUID, Profile>()
         var DiscordLinks = mutableMapOf<String, WebSocketMessage.DiscordLink>()
         var LoggedUsers = mutableSetOf<UUID>()
+        val UUIDMigrations : Map<@Serializable(with = UUIDSerializer::class) UUID, @Serializable(with = UUIDSerializer::class) UUID> by lazy {
+            val migratePath = FabricLoader.getInstance().configDir / "bvauth" / "migrate.json"
+            if (migratePath.exists()) {
+                Json.decodeFromString(migratePath.readText())
+            } else {
+                mutableMapOf()
+            }
+        }
 
         val BedrockCompat : Optional<BedrockGeyserCompat> by lazy {
             if (FabricLoader.getInstance().isModLoaded("geyser-fabric")) {
